@@ -487,6 +487,7 @@ class NewApplication (QtGui.QDialog, radioManagement):
 
 		grid = QtGui.QGridLayout()
 		vbox = QtGui.QVBoxLayout()
+		#vbox.addStretch (1)
 
 		vbox.addLayout (grid)
 
@@ -523,10 +524,18 @@ class NewApplication (QtGui.QDialog, radioManagement):
 		line.setFrameShadow (QtGui.QFrame.Sunken)
 		vbox.addWidget (line)
 
+		# "Parameters" label.
+		label = QtGui.QLabel ("Parameters", self)
+		vbox.addWidget (label, 0, Qt.Alignment (4))
+
+		font = QtGui.QFont (self)
+		font.setPointSize (16)
+		label.setFont (font)
+
+
 		# Parameter box.
 		self.paramLayout = QtGui.QGridLayout()
 		vbox.addLayout (self.paramLayout)
-
 
 		# grid column stretches most
 		self.paramLayout.setColumnStretch (1, 1)

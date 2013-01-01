@@ -100,8 +100,6 @@ class radioManagement ():
 		lastRadioButon = gridLayout.itemAtPosition (rowCount - 1, self.radioCol)
 		self.radioGroup.removeButton (lastRadioButon.widget())
 
-
-
 		# Finally, delete the last row.
 		for i in range (gridLayout.columnCount()):
 			widgetItem = gridLayout.itemAtPosition (rowCount - 1, i)
