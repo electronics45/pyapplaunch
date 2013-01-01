@@ -6,158 +6,159 @@ import signal
 import sys
 import os
 
-import xml.etree.cElementTree as xml
+#import xml.etree.cElementTree as xml
 
-class radioManagement ():
-	def __init__ (self, radioCol):
-		self.radioGroup = QtGui.QButtonGroup() # To store radio buttons.
-		self.radioCol = radioCol
+from radioManagement import radioManagement
+from Tree import Tree
 
-	def initDelAndMovButtons (self, vLayout):
-		# A horizontal rule.
-		line = QtGui.QFrame (self)
-		line.setFrameShape (QtGui.QFrame.HLine)
-		line.setFrameShadow (QtGui.QFrame.Sunken)
-		vLayout.addWidget (line)
+#class radioManagement ():
+	#def __init__ (self, radioCol):
+		#self.radioGroup = QtGui.QButtonGroup() # To store radio buttons.
+		#self.radioCol = radioCol
 
-		# Add hbox for edit buttons.
-		self.editHBox = QtGui.QHBoxLayout()
-		self.editHBox.addStretch (1)
-		vLayout.addLayout (self.editHBox)
+	#def initDelAndMovButtons (self, vLayout):
+		### A horizontal rule.
+		##line = QtGui.QFrame (self)
+		##line.setFrameShape (QtGui.QFrame.HLine)
+		##line.setFrameShadow (QtGui.QFrame.Sunken)
+		##vLayout.addWidget (line)
 
-		button = QtGui.QPushButton ("&Delete", self)
-		self.editHBox.addWidget (button)
-		self.connect (button, SIGNAL ("clicked()"), self.deleteButtonClicked)
+		## Add hbox for edit buttons.
+		#self.editHBox = QtGui.QHBoxLayout()
+		#self.editHBox.addStretch (1)
+		#vLayout.addLayout (self.editHBox)
 
-		button = QtGui.QPushButton ("Move &Up", self)
-		self.editHBox.addWidget (button)
-		self.connect (button, SIGNAL ("clicked()"), self.moveUpButtonClicked)
+		#button = QtGui.QPushButton ("&Delete", self)
+		#self.editHBox.addWidget (button)
+		#self.connect (button, SIGNAL ("clicked()"), self.deleteButtonClicked)
 
-		button = QtGui.QPushButton ("Move Do&wn", self)
-		self.editHBox.addWidget (button)
-		self.connect (button, SIGNAL ("clicked()"), self.moveDownButtonClicked)
+		#button = QtGui.QPushButton ("Move &Up", self)
+		#self.editHBox.addWidget (button)
+		#self.connect (button, SIGNAL ("clicked()"), self.moveUpButtonClicked)
 
-	def buildRow (self, gridLayout, row = 0):
-		#row = gridLayout.rowCount() + 1
+		#button = QtGui.QPushButton ("Move Do&wn", self)
+		#self.editHBox.addWidget (button)
+		#self.connect (button, SIGNAL ("clicked()"), self.moveDownButtonClicked)
 
-		# Create the radio button for editing of the app.
-		radio = QtGui.QRadioButton (str (row), self)
-		gridLayout.addWidget (radio, row, self.radioCol)
-		self.radioGroup.addButton(radio, row)
+	#def buildRow (self, gridLayout, row = 0):
+		##row = gridLayout.rowCount() + 1
 
-	def setCheckedRadioButtonByRow (self, row):
-		print "row: " + str (row)
-		for radio in self.radioGroup.buttons():
-			if radio.text() == str (row):
-				radio.setChecked (True)
-				return
+		## Create the radio button for editing of the app.
+		#radio = QtGui.QRadioButton (str (row), self)
+		#gridLayout.addWidget (radio, row, self.radioCol)
+		#self.radioGroup.addButton(radio, row)
 
-		# Radio button not found.
-		raise RuntimeError ("Could not find radio at row: " + str (row))
+	#def setCheckedRadioButtonByRow (self, row):
+		#print "row: " + str (row)
+		#for radio in self.radioGroup.buttons():
+			#if radio.text() == str (row):
+				#radio.setChecked (True)
+				#return
 
-	def clearGridLayout (self, gridLayout):
-		# This function removes all of the automatically generated
-		# buttons and such from the layout.
+		## Radio button not found.
+		#raise RuntimeError ("Could not find radio at row: " + str (row))
 
-		# Remove the radio buttons fromt "radioGroup".
-		for buttonEntry in self.radioGroup.buttons():
-			self.radioGroup.removeButton (buttonEntry)
+	#def clearGridLayout (self, gridLayout):
+		## This function removes all of the automatically generated
+		## buttons and such from the layout.
 
-		for i in range (gridLayout.rowCount()):
-			for j in range (gridLayout.columnCount()):
-				widgetItem = gridLayout.itemAtPosition (i, j)
+		## Remove the radio buttons fromt "radioGroup".
+		#for buttonEntry in self.radioGroup.buttons():
+			#self.radioGroup.removeButton (buttonEntry)
+
+		#for i in range (gridLayout.rowCount()):
+			#for j in range (gridLayout.columnCount()):
+				#widgetItem = gridLayout.itemAtPosition (i, j)
 				
-				if widgetItem != None:
-					widgetItem.widget().setParent (None)
+				#if widgetItem != None:
+					#widgetItem.widget().setParent (None)
 
-	def getWidgetAtCheckedRow (self, gridLayout, column):
-		checkedButtonId = self.radioGroup.checkedId()
+	#def getWidgetAtCheckedRow (self, gridLayout, column):
+		#checkedButtonId = self.radioGroup.checkedId()
 
-		if checkedButtonId == -1:
-			# No radio buttons are checked.
-			return None
+		#if checkedButtonId == -1:
+			## No radio buttons are checked.
+			#return None
 
-		# widged at "checkedButtonId"'s row.
-		return gridLayout.itemAtPosition (checkedButtonId, column).widget()
+		## widged at "checkedButtonId"'s row.
+		#return gridLayout.itemAtPosition (checkedButtonId, column).widget()
 
-	def deleteRow (self, gridLayout, rowNum):
-		# What we'll actually do, is leave the radio buttons in tact, but 
-		# delete all the other widgets in the row.  Then we'll move everything
-		# else up, and finally delete the last radio button.
+	#def deleteRow (self, gridLayout, rowNum):
+		## What we'll actually do, is leave the radio buttons in tact, but 
+		## delete all the other widgets in the row.  Then we'll move everything
+		## else up, and finally delete the last radio button.
 
-		for i in range (gridLayout.columnCount()):
-			# Skip the radio button's column.
-			if i == self.radioCol:
-				continue
+		#for i in range (gridLayout.columnCount()):
+			## Skip the radio button's column.
+			#if i == self.radioCol:
+				#continue
 
-			widgetItem = gridLayout.itemAtPosition (rowNum, i)
+			#widgetItem = gridLayout.itemAtPosition (rowNum, i)
 
-			if widgetItem == None:
-				continue
+			#if widgetItem == None:
+				#continue
 
-			# Delete the widget.
-			widgetItem.widget().setParent (None)
+			## Delete the widget.
+			#widgetItem.widget().setParent (None)
 
-		# Next, move everything up row by row.  +1 is to offset from the row we just deleted.
-		for i in range (rowNum + 1, gridLayout.rowCount()):
-			for j in range (gridLayout.columnCount()):
-				if j == self.radioCol:
-					continue
+		## Next, move everything up row by row.  +1 is to offset from the row we just deleted.
+		#for i in range (rowNum + 1, gridLayout.rowCount()):
+			#for j in range (gridLayout.columnCount()):
+				#if j == self.radioCol:
+					#continue
 
-				widgetItem = gridLayout.itemAtPosition (i, j)
+				#widgetItem = gridLayout.itemAtPosition (i, j)
 
-				if widgetItem == None:
-					continue
+				#if widgetItem == None:
+					#continue
 
-				gridLayout.addWidget (widgetItem.widget(), i - 1, j)
+				#gridLayout.addWidget (widgetItem.widget(), i - 1, j)
 
-		# Finally, delete the last row.
-		for i in range (gridLayout.columnCount()):
-			widgetItem = gridLayout.itemAtPosition (gridLayout.rowCount() - 1, i)
+		## Finally, delete the last row.
+		#for i in range (gridLayout.columnCount()):
+			#widgetItem = gridLayout.itemAtPosition (gridLayout.rowCount() - 1, i)
 
-			if widgetItem == None:
-				continue
+			#if widgetItem == None:
+				#continue
 
-			# Delete the widget.
-			widgetItem.widget().setParent (None)
+			## Delete the widget.
+			#widgetItem.widget().setParent (None)
 
-	def swapRows (self, gridLayout, row1, row2):
-		row1Widgets = {}
+	#def swapRows (self, gridLayout, row1, row2):
+		#row1Widgets = {}
 
-		for i in range (gridLayout.columnCount()):
-			widgetItem = gridLayout.itemAtPosition (row1, i)
+		#for i in range (gridLayout.columnCount()):
+			#widgetItem = gridLayout.itemAtPosition (row1, i)
 
-			if widgetItem == None:
-				continue
+			#if widgetItem == None:
+				#continue
 
-			widget1 = widgetItem.widget()
-			widget2 = gridLayout.itemAtPosition (row2, i).widget()
+			#widget1 = widgetItem.widget()
+			#widget2 = gridLayout.itemAtPosition (row2, i).widget()
 
-			# Is this the radio button widget?
-			if i == self.radioCol:
-				# We don't want to move the radio buttons, but
-				# we do want change which is checked, if applicable.
-				if widget1.isChecked():
-					widget2.setChecked (True)
-				elif widget2.isChecked():
-					widget1.setChecked (True)
+			## Is this the radio button widget?
+			#if i == self.radioCol:
+				## We don't want to move the radio buttons, but
+				## we do want change which is checked, if applicable.
+				#if widget1.isChecked():
+					#widget2.setChecked (True)
+				#elif widget2.isChecked():
+					#widget1.setChecked (True)
 
-				continue
+				#continue
 
-			gridLayout.addWidget (widget2, row1, i)
-			gridLayout.addWidget (widget1, row2, i)
-
-		
+			#gridLayout.addWidget (widget2, row1, i)
+			#gridLayout.addWidget (widget1, row2, i)
 
 
-	def deleteButtonClicked (self):
-		pass
+	#def deleteButtonClicked (self):
+		#pass
 	
-	def moveUpButtonClicked (self):
-		pass
+	#def moveUpButtonClicked (self):
+		#pass
 	
-	def moveDownButtonClicked (self):
-		pass
+	#def moveDownButtonClicked (self):
+		#pass
 
 class MainWindow (QtGui.QMainWindow, radioManagement):
 	def __init__ (self):
@@ -193,6 +194,12 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.buttonLayout = QtGui.QGridLayout()
 		vbox.addLayout (self.buttonLayout)
 		self.buttonLayout.setColumnStretch (self.btnCol, 1) # Btn column stretches most.
+
+		# A horizontal rule.
+		line = QtGui.QFrame (self)
+		line.setFrameShape (QtGui.QFrame.HLine)
+		line.setFrameShadow (QtGui.QFrame.Sunken)
+		vbox.addWidget (line)
 
 		# Insert the control buttons for managemnt of the generated buttons.
 		self.initDelAndMovButtons (vbox)
@@ -400,7 +407,6 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		#self.buildAppButtons (activeApp ["slot"])
 		self.swapRows (self.buttonLayout, checkedRow, swapRow)
 
-
 		# Commit changes to disk.
 		self.tree.writeTreeToDisk (self.scriptDatabasePath)
 
@@ -453,15 +459,22 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.tree.updateApp (appDetails1)
 		self.tree.updateApp (appDetails2)
 
-class NewApplication (QtGui.QDialog):
+class NewApplication (QtGui.QDialog, radioManagement):
 	
 	def __init__ (self, appDefaultDetails):
 		super (NewApplication, self).__init__()
 
-		self.btnCol = 3
-		self.numCol = 0
-		self.defValCol = 1
-		self.reqCol = 2
+		#self.btnCol = 3
+		self.radioCol = 0
+		self.gridGridCol = 1
+		
+		self.gridLabelLabelCol = 0
+		self.gridLabelCol = 1
+		self.paramReqCol = 2
+		#self.defValCol = 1
+		#self.reqCol = 2
+
+		radioManagement.__init__ (self, self.radioCol)
 
 		self.initUI()
 
@@ -513,13 +526,19 @@ class NewApplication (QtGui.QDialog):
 		# Parameter box.
 		self.paramLayout = QtGui.QGridLayout()
 		vbox.addLayout (self.paramLayout)
-		self.paramLayout.setColumnStretch (2, 1) # text column stretches most
+
+
+		# grid column stretches most
+		self.paramLayout.setColumnStretch (1, 1)
 
 		#paramLayout.addWidget (QtGui.QLabel)
+		self.initDelAndMovButtons (vbox)
 
+		# Insert "new" button start of edit buttons.
 		self.newParamBtn = QtGui.QPushButton ("New &Param", self)
 		self.newParamBtn.clicked.connect (self.newParamBtnClicked)
-		self.paramLayout.addWidget (self.newParamBtn, 0, self.btnCol)
+		#self.paramLayout.addWidget (self.newParamBtn, 0, self.btnCol)
+		self.editHBox.insertWidget (0, self.newParamBtn)
 
 		# A horizontal rule.
 		line = QtGui.QFrame (self)
@@ -571,9 +590,6 @@ class NewApplication (QtGui.QDialog):
 		else:
 			self.accept()
 
-	def newParamBtnClicked (self):
-		pass
-
 	def showGetFileDialog (self, textTarget):
 		text = QtGui.QFileDialog.getOpenFileName (self, 'command to run')
 
@@ -581,15 +597,40 @@ class NewApplication (QtGui.QDialog):
 			textTarget.setText (str (text))
 
 	def addParameter (self, defaultValues = {}):
-		rowNum = self.paramLayout.rowCount() + 1
+		rowNum = self.paramLayout.rowCount()
 
 		# Add the number
-		number = QtGui.rowNum
-		#self.paramLayout.
+		self.buildRow (self.paramLayout, rowNum)
 
-		# Adjust the "new app" button to be just below our working row.
-		self.paramLayout.remove (self.newParamBtn)
-		self.paramLayout.addWidget (self.newParamBtn, self.btnCol, rowNum + 1)
+		# Second grid layout for we will need multiple lines
+		gridLayout = QtGui.QGridLayout()
+		self.paramLayout.addLayout (gridLayout, rowNum, self.gridGridCol)
+
+		# Horizontal layout for checkboxes.
+
+		# Horizontal layout for text boxes.
+
+		# Edit box for parameter's name
+		label = QtGui.QLabel ("Label:", self)
+		gridLayout.addWidget (label, 0, self.gridLabelLabelCol)
+
+		paramLabel = QtGui.QLineEdit (self)
+		gridLayout.addWidget (paramLabel, 0, self.gridLabelCol)
+
+		# Parameter required checkbox
+		paramRequired = QtGui.QCheckBox ("Required?", self)
+		gridLayout.addWidget (paramRequired, 0, self.paramReqCol)
+
+		# Edit box for parameter's default value.
+		label = QtGui.QLabel ("Default:", self)
+		gridLayout.addWidget (label, 1, self.gridLabelLabelCol)
+
+		defaultVal = QtGui.QLineEdit (self)
+		gridLayout.addWidget (defaultVal, 1, self.gridLabelCol)
+
+		# Show file dialog button checkbox.
+		showDialog = QtGui.QCheckBox ("file chooser?", self)
+		gridLayout.addWidget (showDialog, 1, self.paramReqCol)
 
 	def returnNewAppDetails (self):
 		#newApp = {}
@@ -605,6 +646,50 @@ class NewApplication (QtGui.QDialog):
 		self.appDetails ["is_group"] = False
 
 		return self.appDetails
+
+	def newParamBtnClicked (self):
+		self.addParameter()
+
+	def deleteButtonClicked (self):
+		checkedButtonId = self.radioGroup.checkedId()
+
+		if checkedButtonId == -1:
+			print "No item selected!"
+			return
+
+		self.deleteRow (self.paramLayout, checkedButtonId)
+	
+	def moveUpButtonClicked (self):
+		# We are moving up, so we'll swap with the row above us.
+		
+		checkedButtonId = self.radioGroup.checkedId()
+
+		if checkedButtonId == -1:
+			print "No item selected!"
+			return
+
+		previousButtonRow = checkedButtonId - 1
+
+		if previousButtonRow <= 0:
+			print "Row already at highest position!"
+			return
+
+		self.swapRows (self.paramLayout, checkedButtonId, previousButtonRow)
+	
+	def moveDownButtonClicked (self):
+		checkedButtonId = self.radioGroup.checkedId()
+
+		if checkedButtonId == -1:
+			print "No item selected!"
+			return
+
+		nextButtonRow = checkedButtonId + 1
+
+		if nextButtonRow > len (self.radioGroup.buttons()):
+			print "Row already at lowest position!"
+			return
+
+		self.swapRows (self.paramLayout, checkedButtonId, nextButtonRow)
 
 #class Application ():
 	#def __init__ (self):
@@ -623,168 +708,168 @@ class NewApplication (QtGui.QDialog):
 		#):
 		#pass
 		
-class Tree ():
-	def __init__ (self, treePath):
-		self.rootName = "applications"
+#class Tree ():
+	#def __init__ (self, treePath):
+		#self.rootName = "applications"
 		
-		self.root = None
-		self.currentContext = None
+		#self.root = None
+		#self.currentContext = None
 
-		try:
-			self.readTreeFromDisk (treePath)
-		except:
-			print "could not read tree '" + treePath + "'; building default."
-			pass
+		#try:
+			#self.readTreeFromDisk (treePath)
 		#except:
-			#raise
+			#print "could not read tree '" + treePath + "'; building default."
+			#pass
+		##except:
+			##raise
 
-		if self.root == None:
-			self.buildDefaultTree()
+		#if self.root == None:
+			#self.buildDefaultTree()
 
-	def buildDefaultTree (self):
-		self.root = xml.Element (self.rootName)
-		self.currentContext = self.root
+	#def buildDefaultTree (self):
+		#self.root = xml.Element (self.rootName)
+		#self.currentContext = self.root
 
-	def writeTreeToDisk (self, writeTarget):
-		targetfile = open (writeTarget, 'w')
+	#def writeTreeToDisk (self, writeTarget):
+		#targetfile = open (writeTarget, 'w')
 
-		self.indent (self.root)
+		#self.indent (self.root)
 
-		try:  # Using a try block ensures file is always closed.
-			xml.ElementTree (self.root).write (targetfile)
-		finally:
-			targetfile.close()
+		#try:  # Using a try block ensures file is always closed.
+			#xml.ElementTree (self.root).write (targetfile)
+		#finally:
+			#targetfile.close()
 	
-	def readTreeFromDisk (self, readTarget):
-		tree = xml.parse (readTarget)
+	#def readTreeFromDisk (self, readTarget):
+		#tree = xml.parse (readTarget)
 		
-		self.root = tree.getroot()
-		self.currentContext = self.root
+		#self.root = tree.getroot()
+		#self.currentContext = self.root
 
-	def addApp (self, appDetails):
-		# Create a child element, and append it to the root node.
-		appNode = xml.Element (str (appDetails ["name"]))
-		self.root.append (appNode)
+	#def addApp (self, appDetails):
+		## Create a child element, and append it to the root node.
+		#appNode = xml.Element (str (appDetails ["name"]))
+		#self.root.append (appNode)
 
-		# Now append the remaing properties as additional nested nodes.
-		node = xml.Element ("command")
-		node.text = str (appDetails ["command"])
-		appNode.append (node)
+		## Now append the remaing properties as additional nested nodes.
+		#node = xml.Element ("command")
+		#node.text = str (appDetails ["command"])
+		#appNode.append (node)
 
-		# Other properties.
-		if "use_sudo" in appDetails:
-			node = xml.Element ("use_sudo")
-			node.text = str (appDetails ["use_sudo"])
-			appNode.append (node)
-		if "slot" in appDetails:
-			node = xml.Element ("slot")
-			node.text = str (appDetails ["slot"])
-			appNode.append (node)
+		## Other properties.
+		#if "use_sudo" in appDetails:
+			#node = xml.Element ("use_sudo")
+			#node.text = str (appDetails ["use_sudo"])
+			#appNode.append (node)
+		#if "slot" in appDetails:
+			#node = xml.Element ("slot")
+			#node.text = str (appDetails ["slot"])
+			#appNode.append (node)
 
-	def updateApp (self, appDetails):
-		appNode = self.currentContext.find (appDetails ["name"])
+	#def updateApp (self, appDetails):
+		#appNode = self.currentContext.find (appDetails ["name"])
 
-		if appNode == None:
-			raise RuntimeError ("Could not find app '" + appName + "' in current context '" + str (self.currentContext.tag) + "'.")
+		#if appNode == None:
+			#raise RuntimeError ("Could not find app '" + appName + "' in current context '" + str (self.currentContext.tag) + "'.")
 
-		# Iterate over all properties to be updated.
-		for key in appDetails.keys():
-			childNode = appNode.find (key)
-			if childNode == None:
-				# Child node does not yet exist, so lets create it.
-				childNode = xml.Element (key)
-				appNode.append (childNode)
+		## Iterate over all properties to be updated.
+		#for key in appDetails.keys():
+			#childNode = appNode.find (key)
+			#if childNode == None:
+				## Child node does not yet exist, so lets create it.
+				#childNode = xml.Element (key)
+				#appNode.append (childNode)
 
-			childNode.text = appDetails [key]
+			#childNode.text = appDetails [key]
 
-	def getAppDetails (self, appName):
-		dictionary = {}
+	#def getAppDetails (self, appName):
+		#dictionary = {}
 
-		app = self.currentContext.find (appName)
+		#app = self.currentContext.find (appName)
 
-		if app == None:
-			raise RuntimeError ("Could not find app '" + appName + "' in current context '" + str (self.currentContext.tag) + "'.")
+		#if app == None:
+			#raise RuntimeError ("Could not find app '" + appName + "' in current context '" + str (self.currentContext.tag) + "'.")
 
-		# Start with the applications name (stored as tag).
-		dictionary ["name"] = app.tag
+		## Start with the applications name (stored as tag).
+		#dictionary ["name"] = app.tag
 
-		# Build a dictionary of all the apps child elements.
-		for appProperty in app:
-			dictionary [appProperty.tag] = appProperty.text
+		## Build a dictionary of all the apps child elements.
+		#for appProperty in app:
+			#dictionary [appProperty.tag] = appProperty.text
 
-		return dictionary
+		#return dictionary
 
 
-	def deleteApp (self, name):
-		# If an app with this name exists, modify it instead of creating a new one.
-		appNode = self.currentContext.find (name)
+	#def deleteApp (self, name):
+		## If an app with this name exists, modify it instead of creating a new one.
+		#appNode = self.currentContext.find (name)
 
-		if appNode == None:
-			raise RuntimeError ("Could not find app '" + name + "' in current context '" + str (self.currentContext.tag) + "'.")
+		#if appNode == None:
+			#raise RuntimeError ("Could not find app '" + name + "' in current context '" + str (self.currentContext.tag) + "'.")
 
-		self.currentContext.remove (appNode)
+		#self.currentContext.remove (appNode)
 
-	def getApplications (self):
-		applications = []
+	#def getApplications (self):
+		#applications = []
 
-		# Build a list of dictionaries from the tree's nodes of the app's.
-		for app in self.currentContext:
-			## Push this dictionary into the applications list.
-			applications.append (self.getAppDetails (app.tag))
-
-		# Now we'll order the applications based on their "slot" number.
-		# "lambda" just creates an unnamed function with "app" as a parameter.
-		applications = sorted (applications, key = lambda app: app ["slot"])
-
-		# Finally, we'll reset the "slot" number in case an app was deleted, etc.
-		#for i in range (len (applications)):
-			#applications [i]["slot"] = i
-		for i, app in enumerate (applications):
-			app ["slot"] = str (i + 1) # "slot" is indexed from "1", not "0".
-
-			self.currentContext.find (app ["name"]).find ("slot").text = str (i + 1)
-
-		# Finally, we must commit these slot numbers back to the tree to avoid disparity.
+		## Build a list of dictionaries from the tree's nodes of the app's.
 		#for app in self.currentContext:
-			#app.find ("slot").text = applications
-		#for appDetails in applications	
-		#print applications
+			### Push this dictionary into the applications list.
+			#applications.append (self.getAppDetails (app.tag))
 
-		return applications
+		## Now we'll order the applications based on their "slot" number.
+		## "lambda" just creates an unnamed function with "app" as a parameter.
+		#applications = sorted (applications, key = lambda app: app ["slot"])
 
-	def getNumApps (self):
-		# Is there not a nicer way to do this?
-		return len (list (self.currentContext))
+		## Finally, we'll reset the "slot" number in case an app was deleted, etc.
+		##for i in range (len (applications)):
+			##applications [i]["slot"] = i
+		#for i, app in enumerate (applications):
+			#app ["slot"] = str (i + 1) # "slot" is indexed from "1", not "0".
 
-	def doesAppExist (self, appName):
-		if self.root.find (appName):
-			return True
-		else:
-			return False
+			#self.currentContext.find (app ["name"]).find ("slot").text = str (i + 1)
 
-	def setAppParam (self, appName, paramNumber, required = False, defaultValue = None):
-		pass
+		## Finally, we must commit these slot numbers back to the tree to avoid disparity.
+		##for app in self.currentContext:
+			##app.find ("slot").text = applications
+		##for appDetails in applications	
+		##print applications
+
+		#return applications
+
+	#def getNumApps (self):
+		## Is there not a nicer way to do this?
+		#return len (list (self.currentContext))
+
+	#def doesAppExist (self, appName):
+		#if self.root.find (appName):
+			#return True
+		#else:
+			#return False
+
+	#def setAppParam (self, appName, paramNumber, required = False, defaultValue = None):
+		#pass
 	
-	def deleteAppParam (self, appName, paramNumber):
-		pass
+	#def deleteAppParam (self, appName, paramNumber):
+		#pass
 	
-	def getAppParams (self, appName):
-		pass
+	#def getAppParams (self, appName):
+		#pass
 
-	def indent (self, elem, level = 0):
-		i = "\n" + level*"  "
-		if len (elem):
-			if not elem.text or not elem.text.strip():
-				elem.text = i + "  "
-			if not elem.tail or not elem.tail.strip():
-				elem.tail = i
-			for elem in elem:
-				self.indent (elem, level + 1)
-			if not elem.tail or not elem.tail.strip():
-				elem.tail = i
-		else:
-			if level and (not elem.tail or not elem.tail.strip()):
-				elem.tail = i
+	#def indent (self, elem, level = 0):
+		#i = "\n" + level*"  "
+		#if len (elem):
+			#if not elem.text or not elem.text.strip():
+				#elem.text = i + "  "
+			#if not elem.tail or not elem.tail.strip():
+				#elem.tail = i
+			#for elem in elem:
+				#self.indent (elem, level + 1)
+			#if not elem.tail or not elem.tail.strip():
+				#elem.tail = i
+		#else:
+			#if level and (not elem.tail or not elem.tail.strip()):
+				#elem.tail = i
 
 #class AppParam ():
 	#def __init__ (self):
