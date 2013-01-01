@@ -1,2 +1,20 @@
 <applications>
-  </applications>
+  <e>
+    <command>e</command>
+    <use_sudo>False</use_sudo>
+    <slot>2</slot>
+    <name>e</name>
+  </e>
+  <d>
+    <command>d</command>
+    <use_sudo>False</use_sudo>
+    <slot>5</slot>
+    <name>d</name>
+  </d>
+  <qq>
+    <command>q</command>
+    <use_sudo>False</use_sudo>
+    <slot>1</slot>
+    <name>qq</name>
+  </qq>
+</applications>

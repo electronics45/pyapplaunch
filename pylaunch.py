@@ -597,7 +597,7 @@ class NewApplication (QtGui.QDialog, radioManagement):
 			textTarget.setText (str (text))
 
 	def addParameter (self, defaultValues = {}):
-		rowNum = self.paramLayout.rowCount()
+		rowNum = self.getRowCount()
 
 		# Add the number
 		self.buildRow (self.paramLayout, rowNum)
