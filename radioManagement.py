@@ -83,7 +83,7 @@ class radioManagement ():
 			self.deleteWidgetItem (widgetItem)
 
 		# Next, move everything up row by row.  +1 is to offset from the row we just deleted.
-		for i in range (rowNum + 1, rowCount):
+		for i in range (rowNum + 1, rowCount + 1):
 			for j in range (gridLayout.columnCount()):
 				if j == self.radioCol:
 					continue
@@ -97,12 +97,12 @@ class radioManagement ():
 				self.addWidgetItem (gridLayout, widgetItem, i - 1, j)
 
 		# We'll also need to remove the radio button's reference from "radioGroup".
-		lastRadioButon = gridLayout.itemAtPosition (rowCount - 1, self.radioCol)
+		lastRadioButon = gridLayout.itemAtPosition (rowCount, self.radioCol)
 		self.radioGroup.removeButton (lastRadioButon.widget())
 
 		# Finally, delete the last row.
 		for i in range (gridLayout.columnCount()):
-			widgetItem = gridLayout.itemAtPosition (rowCount - 1, i)
+			widgetItem = gridLayout.itemAtPosition (rowCount, i)
 
 			# Delete the widget.
 			self.deleteWidgetItem (widgetItem)
@@ -197,7 +197,12 @@ class radioManagement ():
 	def getRowCount (self):
 		# Unfortunately, gridLayout.rowCount() is unreliable for getting the number
 		# rows in the grid, so we need an alternative method.
-		return len (self.radioGroup.buttons()) + 1
+		return len (self.radioGroup.buttons())
+
+	def getRowRange (self):
+		# Return the range of values from 1 (first param) to the number of rows,
+		# include the final value (achieved by +1 offset).
+		return range (1, len (self.radioGroup.buttons()) + 1)
 
 	def deleteButtonClicked (self):
 		pass

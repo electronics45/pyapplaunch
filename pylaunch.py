@@ -580,8 +580,14 @@ class NewApplication (QtGui.QDialog, radioManagement):
 			self.command.setText (values ["command"])
 		if "use_sudo" in values:
 			pass
-		if "slot" in values:
-			pass
+
+		# Set the parameters.
+		if "params" in values:
+			for param in values ["params"]:
+				print "param: " + str(param)
+				self.addParameter (param)
+
+		print values
 
 	def cmdBtnClicked (self):
 		self.showGetFileDialog (self.command)
@@ -596,6 +602,9 @@ class NewApplication (QtGui.QDialog, radioManagement):
 		elif len (self.command.text()) == 0:
 			error.showMessage ("No command selected!")
 			error.exec_()
+		elif self.areAllParamsValid() == False:
+			error.showMessage ("Parameter is missing a name!")
+			error.exec_()
 		else:
 			self.accept()
 
@@ -606,7 +615,7 @@ class NewApplication (QtGui.QDialog, radioManagement):
 			textTarget.setText (str (text))
 
 	def addParameter (self, defaultValues = {}):
-		rowNum = self.getRowCount()
+		rowNum = self.getRowCount() + 1 # +1 to offset to the next free row.
 
 		# Add the number
 		self.buildRow (self.paramLayout, rowNum)
@@ -625,10 +634,12 @@ class NewApplication (QtGui.QDialog, radioManagement):
 
 		paramLabel = QtGui.QLineEdit (self)
 		gridLayout.addWidget (paramLabel, 0, self.gridLabelCol)
+		self.setDefaultValue (paramLabel, defaultValues, "name")
 
 		# Parameter required checkbox
 		paramRequired = QtGui.QCheckBox ("Required?", self)
 		gridLayout.addWidget (paramRequired, 0, self.paramReqCol)
+		self.setDefaultValue (paramRequired, defaultValues, "required")
 
 		# Edit box for parameter's default value.
 		label = QtGui.QLabel ("Default:", self)
@@ -636,10 +647,63 @@ class NewApplication (QtGui.QDialog, radioManagement):
 
 		defaultVal = QtGui.QLineEdit (self)
 		gridLayout.addWidget (defaultVal, 1, self.gridLabelCol)
+		self.setDefaultValue (defaultVal, defaultValues, "default")
 
 		# Show file dialog button checkbox.
-		showDialog = QtGui.QCheckBox ("file chooser?", self)
+		showDialog = QtGui.QCheckBox ("file selecter?", self)
 		gridLayout.addWidget (showDialog, 1, self.paramReqCol)
+		self.setDefaultValue (showDialog, defaultValues, "file_selecter")
+
+	def areAllParamsValid (self):
+		# The only required value for a paramter is a label (name).
+		for param in self.returnParams():
+			if param ["name"] == "":
+				print "No name for param #" + str (param ["slot"])
+				return False
+
+			return True
+
+	def setDefaultValue (self, widget, defaultValues, key):
+		if not key in defaultValues:
+			print "key not found"
+			return
+
+		# Are we processing a checkbox?
+		if type (widget) == QtGui.QLineEdit:
+			widget.setText (defaultValues [key])
+		elif type (widget) == QtGui.QCheckBox:
+			value = defaultValues [key]
+			# The parameter type could be either bool-
+			if type (value) == bool:
+				widget.setChecked (value)
+			else:
+				# -Or a string containing "True" or "False".
+				if (value == "True"):
+					widget.setChecked (True)
+				else:
+					widget.setChecked (False)
+
+	def returnParams (self):
+		params = []
+
+		for rowCount in self.getRowRange():
+			param = {}
+			paramGrid = self.paramLayout.itemAtPosition (rowCount, self.gridGridCol)
+
+			widget = paramGrid.itemAtPosition (0, self.gridLabelCol).widget()
+			param ["name"] = widget.text()
+			widget = paramGrid.itemAtPosition (0, self.paramReqCol).widget()
+			param ["required"] = widget.isChecked()
+			widget = paramGrid.itemAtPosition (1, self.gridLabelCol).widget()
+			param ["default"] = widget.text()
+			widget = paramGrid.itemAtPosition (1, self.paramReqCol).widget()
+			param ["file_selecter"] = widget.isChecked()
+			param ["slot"] = rowCount
+
+			params.append (param)
+
+		#print params
+		return params
 
 	def returnNewAppDetails (self):
 		#newApp = {}
@@ -653,6 +717,8 @@ class NewApplication (QtGui.QDialog, radioManagement):
 
 		# We don't use this dialog for creating groups.
 		self.appDetails ["is_group"] = False
+
+		self.appDetails ["params"] = self.returnParams()
 
 		return self.appDetails
 
