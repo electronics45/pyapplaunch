@@ -26,12 +26,12 @@
         <required>False</required>
         <file_selecter>True</file_selecter>
       </tet>
-      <hy>
-        <default />
+      <hi>
+        <default>tru</default>
         <slot>2</slot>
         <required>False</required>
         <file_selecter>False</file_selecter>
-      </hy>
+      </hi>
       <wot>
         <default />
         <slot>3</slot>

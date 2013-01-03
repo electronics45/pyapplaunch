@@ -306,7 +306,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 		# Check for name clashes.
 		# Keep Retrying until the user succeeds.
-		while self.tree.doesAppExist (appDetails ["name"]) == True:
+		while self.tree.doesAppExistInCurrentContext (appDetails ["name"]) == True:
 			error = QtGui.QErrorMessage(self)
 			error.showMessage ("Script with that name already exists!")
 			error.exec_()

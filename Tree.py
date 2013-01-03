@@ -167,8 +167,8 @@ class Tree ():
 		# Is there not a nicer way to do this?
 		return len (list (self.currentContext))
 
-	def doesAppExist (self, appName):
-		if self.root.find (appName):
+	def doesAppExistInCurrentContext (self, appName):
+		if self.currentContext.find (appName):
 			return True
 		else:
 			return False
