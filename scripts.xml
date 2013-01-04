@@ -1,46 +1,17 @@
 <applications>
-  <d>
-    <slot>2</slot>
-    <use_sudo>False</use_sudo>
-    <is_group>False</is_group>
-    <command>d</command>
-  </d>
   <c>
-    <slot>3</slot>
-    <use_sudo>False</use_sudo>
-    <is_group>False</is_group>
-    <command>c</command>
-  </c>
-  <q>
-    <slot>4</slot>
-    <use_sudo>False</use_sudo>
-    <is_group>False</is_group>
-    <command>q</command>
-  </q>
-  <a>
     <slot>1</slot>
-    <params>
-      <tet>
-        <default>heh</default>
-        <slot>1</slot>
-        <required>False</required>
-        <file_selecter>True</file_selecter>
-      </tet>
-      <hi>
-        <default>tru</default>
-        <slot>2</slot>
-        <required>False</required>
-        <file_selecter>False</file_selecter>
-      </hi>
-      <wot>
-        <default />
-        <slot>3</slot>
-        <required>True</required>
-        <file_selecter>True</file_selecter>
-      </wot>
-    </params>
-    <command>a</command>
-    <use_sudo>False</use_sudo>
-    <is_group>False</is_group>
+    <is_group>True</is_group>
+    <children />
+  </c>
+  <a>
+    <slot>2</slot>
+    <is_group>True</is_group>
+    <children />
   </a>
+  <d>
+    <slot>3</slot>
+    <is_group>True</is_group>
+    <children />
+  </d>
 </applications>

@@ -209,10 +209,18 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.editHBox.insertWidget (0, button) # 0 = beginning of hbox.
 		self.connect (button, SIGNAL ("clicked()"), self.editButtonClicked)
 
+		newLayout = QtGui.QHBoxLayout()
+		vbox.addLayout (newLayout)
+
 		# The new script button.
 		newAppBtn = QtGui.QPushButton ("&New Script", self)
-		vbox.addWidget (newAppBtn)
+		newLayout.addWidget (newAppBtn)
 		self.connect (newAppBtn, SIGNAL ("clicked()"), self.showNewApp)
+
+		# New Group button.
+		newGroupBtn = QtGui.QPushButton ("New &Group", self)
+		newLayout.addWidget (newGroupBtn)
+		self.connect (newGroupBtn, SIGNAL ("clicked()"), self.newGroupBtnClicked)
 
 		self.mainWidget.setLayout (vbox)
 		self.setWindowTitle ("PyLaunch")
@@ -227,15 +235,6 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		appList = self.tree.getApplications()
 
 		for app in appList:
-			# Label the app's position. this would normally be the "slot"
-			# Property, but we'll use "row" to be safe.
-			#label = QtGui.QLabel (str (row), self)
-			#self.buttonLayout.addWidget (label, row, 1)
-
-			## Create the radio button for editing of the app.
-			#radio = QtGui.QRadioButton (str (row), self)
-			#self.buttonLayout.addWidget (radio, row, self.radioCol)
-			#self.radioGroup.addButton(radio, row)
 			self.buildRow (self.buttonLayout, row)
 
 			# Set this radio button if it's slot matches that provided.
@@ -246,7 +245,6 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 			# Create the button.
 			button = QtGui.QPushButton (app ["name"], self)
 			self.buttonLayout.addWidget (button, row, self.btnCol)
-			#self.connect (newAppBtn, SIGNAL ("clicked()"), self.showNewApp)
 
 			row += 1
 
@@ -297,8 +295,47 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		
 		return item.widget().text()
 
+	def editDetails (self, editMethod, defaultDetails = {}):
+		details = defaultDetails.copy()
+
+		#name, ok = QtGui.QInputDialog.getText (self, 'New Group',
+			#'Enter a name for the new group:', QtGui.QLineEdit.Normal, name)
+
+		details, ok = editMethod (details)
+
+		if not ok:
+			return details, False
+
+		# Check for name clashes.
+		# Keep Retrying until the user succeeds.
+		while self.tree.doesAppExistInCurrentContext (details ["name"]) == True:
+			error = QtGui.QErrorMessage(self)
+			error.showMessage ("Script with that name already exists!")
+			error.exec_()
+
+			#name, ok = QtGui.QInputDialog.getText (self, 'New Group',
+				#'Enter a name for the new group:', QtGui.QLineEdit.Normal, name)
+			details, ok = editMethod (details)
+
+			if not ok:
+				return details, False  # User changed their mind.
+
+		return details, True
+
+	def editGroupName (self, defaultDetails):
+		details = defaultDetails.copy()
+
+		if "name" not in details:
+			details ["name"] = ""
+
+		details ["name"], ok = QtGui.QInputDialog.getText (self, 'New Group',
+			'Enter a name for the new group:', QtGui.QLineEdit.Normal,
+			details ["name"])
+
+		return details, ok
+
 	def showNewApp (self):
-		wasAccepted, appDetails = self.editApp({})
+		wasAccepted, appDetails = self.editApp ({})
 
 		# Has the user cancelled?
 		if not wasAccepted:
@@ -330,6 +367,51 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		# Save new configuration to disk.
 		self.tree.writeTreeToDisk (self.scriptDatabasePath)
 
+	def createNewButton (self, editMethod, defaultDetails = {}):
+		details = defaultDetails.copy()
+
+		details, ok = self.editDetails (editMethod, details)
+
+		if not ok:
+			return
+
+		# Set the slot to 1 past the number of app registered here.
+		details ["slot"] = self.tree.getNumApps() + 1
+
+		#self.tree.createNewGroup (groupDetails)
+		self.tree.addApp (details)
+
+		# Rebuild the buttons.
+		self.buildAppButtons()
+
+		# Save new configuration to disk.
+		self.tree.writeTreeToDisk (self.scriptDatabasePath)
+
+	def newGroupBtnClicked (self):
+		groupDetails = {}
+
+		groupDetails ["is_group"] = True
+		groupDetails ["children"] = ""
+
+		self.createNewButton (self.editGroupName, groupDetails)
+
+		#groupDetails, ok = self.editDetails (self.editGroupName, groupDetails)
+
+		#if not ok:
+			#return
+
+		## Set the slot to 1 past the number of app registered here.
+		#groupDetails ["slot"] = self.tree.getNumApps() + 1
+
+		##self.tree.createNewGroup (groupDetails)
+		#self.tree.addApp (groupDetails)
+
+		## Rebuild the buttons.
+		#self.buildAppButtons()
+
+		## Save new configuration to disk.
+		#self.tree.writeTreeToDisk (self.scriptDatabasePath)
+	
 	def editButtonClicked (self):
 		activeAppName = self.getActiveAppName()
 
@@ -340,6 +422,8 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		appDetails = self.tree.getAppDetails (self.getActiveAppName())
 
 		wasAccepted, newAppDetails = self.editApp (appDetails)
+
+		# WARNING Need to check for name clashes here.
 
 		if not wasAccepted:
 			# User changed their mind.  Don't want to edit after all.

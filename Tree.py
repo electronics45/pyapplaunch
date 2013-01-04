@@ -237,6 +237,18 @@ class Tree ():
 		
 		return params
 
+	#def createNewGroup (self, groupDetails):
+		## Create the new group node in the current context.
+		#groupNode = self.getNode (self.currentContext, groupDetails ["name"])
+
+		## Identify this node as a group node.
+		#self.getNode (groupNode, "is_group").text = "True"
+
+		## We'll use this node to hold all the applications when
+		## it becomes the "current context".
+		#self.getNode (groupNode, "children")
+
+		#self.getNode (groupNode, "slot").text = groupDetails ["slot"]
 
 	def indent (self, elem, level = 0):
 		i = "\n" + level*"  "
