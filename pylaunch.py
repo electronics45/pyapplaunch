@@ -295,78 +295,6 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		
 		return item.widget().text()
 
-	def editDetails (self, editMethod, defaultDetails = {}):
-		details = defaultDetails.copy()
-
-		#name, ok = QtGui.QInputDialog.getText (self, 'New Group',
-			#'Enter a name for the new group:', QtGui.QLineEdit.Normal, name)
-
-		details, ok = editMethod (details)
-
-		if not ok:
-			return details, False
-
-		# Check for name clashes.
-		# Keep Retrying until the user succeeds.
-		while self.tree.doesAppExistInCurrentContext (details ["name"]) == True:
-			error = QtGui.QErrorMessage(self)
-			error.showMessage ("Script with that name already exists!")
-			error.exec_()
-
-			#name, ok = QtGui.QInputDialog.getText (self, 'New Group',
-				#'Enter a name for the new group:', QtGui.QLineEdit.Normal, name)
-			details, ok = editMethod (details)
-
-			if not ok:
-				return details, False  # User changed their mind.
-
-		return details, True
-
-	def editGroupName (self, defaultDetails):
-		details = defaultDetails.copy()
-
-		if "name" not in details:
-			details ["name"] = ""
-
-		details ["name"], ok = QtGui.QInputDialog.getText (self, 'New Group',
-			'Enter a name for the new group:', QtGui.QLineEdit.Normal,
-			details ["name"])
-
-		return details, ok
-
-	def showNewApp (self):
-		wasAccepted, appDetails = self.editApp ({})
-
-		# Has the user cancelled?
-		if not wasAccepted:
-			return
-
-		# Check for name clashes.
-		# Keep Retrying until the user succeeds.
-		while self.tree.doesAppExistInCurrentContext (appDetails ["name"]) == True:
-			error = QtGui.QErrorMessage(self)
-			error.showMessage ("Script with that name already exists!")
-			error.exec_()
-
-			if not wasAccepted:
-				return  # User changed their mind.
-
-			wasAccepted, appDetails = self.editApp (appDetails)
-
-		# Set the slot to 1 past the number of app registered here.
-		appDetails ["slot"] = self.tree.getNumApps() + 1
-
-		#print self.tree.getNumApps()
-
-		# Add this new app to the tree.
-		self.tree.addApp (appDetails)
-
-		# Rebuild the buttons.
-		self.buildAppButtons()
-
-		# Save new configuration to disk.
-		self.tree.writeTreeToDisk (self.scriptDatabasePath)
-
 	def createNewButton (self, editMethod, defaultDetails = {}):
 		details = defaultDetails.copy()
 
@@ -387,31 +315,100 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		# Save new configuration to disk.
 		self.tree.writeTreeToDisk (self.scriptDatabasePath)
 
-	def newGroupBtnClicked (self):
-		groupDetails = {}
+	def editDetails (self, editMethod, defaultDetails = {}):
+		details = defaultDetails.copy()
 
-		groupDetails ["is_group"] = True
-		groupDetails ["children"] = ""
+		if "name" not in details:
+			details ["name"] = ""
 
-		self.createNewButton (self.editGroupName, groupDetails)
+		originalName = details ["name"]
 
-		#groupDetails, ok = self.editDetails (self.editGroupName, groupDetails)
+		details, ok = editMethod (details)
 
-		#if not ok:
+		if not ok:
+			return details, False
+
+		# Check for name clashes.
+		# Keep Retrying until the user succeeds.
+		while self.tree.doesAppExistInCurrentContext (details ["name"]) == True:
+			if details ["name"] == originalName:
+				# Looks like the user decided to keep the original name.
+				break
+
+			error = QtGui.QErrorMessage(self)
+			error.showMessage ("Script with that name already exists!")
+			error.exec_()
+
+			details, ok = editMethod (details)
+
+			if not ok:
+				return details, False  # User changed their mind.
+
+		return details, True
+
+	def editAppDetails (self, defaultDetails):
+		newApp = NewApplication (defaultDetails)
+
+		# Wait for the dialog to be closed/canceld/accepted/
+		if not newApp.exec_():
+			return False, appDetails
+		
+		returnDetails = newApp.returnNewAppDetails()
+
+		return returnDetails, True
+
+	def editGroupName (self, defaultDetails):
+		details = defaultDetails.copy()
+
+		details ["name"], ok = QtGui.QInputDialog.getText (self, 'New Group',
+			'Enter a name for the new group:', QtGui.QLineEdit.Normal,
+			details ["name"])
+
+		return details, ok
+
+	def showNewApp (self):
+		#wasAccepted, appDetails = self.editApp ({})
+
+		## Has the user cancelled?
+		#if not wasAccepted:
 			#return
 
-		## Set the slot to 1 past the number of app registered here.
-		#groupDetails ["slot"] = self.tree.getNumApps() + 1
+		## Check for name clashes.
+		## Keep Retrying until the user succeeds.
+		#while self.tree.doesAppExistInCurrentContext (appDetails ["name"]) == True:
+			#error = QtGui.QErrorMessage(self)
+			#error.showMessage ("Script with that name already exists!")
+			#error.exec_()
 
-		##self.tree.createNewGroup (groupDetails)
-		#self.tree.addApp (groupDetails)
+			#if not wasAccepted:
+				#return  # User changed their mind.
+
+			#wasAccepted, appDetails = self.editApp (appDetails)
+
+		## Set the slot to 1 past the number of app registered here.
+		#appDetails ["slot"] = self.tree.getNumApps() + 1
+
+		##print self.tree.getNumApps()
+
+		## Add this new app to the tree.
+		#self.tree.addApp (appDetails)
 
 		## Rebuild the buttons.
 		#self.buildAppButtons()
 
 		## Save new configuration to disk.
 		#self.tree.writeTreeToDisk (self.scriptDatabasePath)
-	
+
+		self.createNewButton (self.editAppDetails)
+
+	def newGroupBtnClicked (self):
+		groupDetails = {}
+
+		groupDetails ["is_group"] = "True"
+		groupDetails ["children"] = ""
+
+		self.createNewButton (self.editGroupName, groupDetails)
+
 	def editButtonClicked (self):
 		activeAppName = self.getActiveAppName()
 
@@ -421,23 +418,33 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 		appDetails = self.tree.getAppDetails (self.getActiveAppName())
 
-		wasAccepted, newAppDetails = self.editApp (appDetails)
+		if appDetails ["is_group"] == "False":
+			newAppDetails, wasAccepted = self.editDetails (self.editAppDetails,
+				appDetails)
 
-		# WARNING Need to check for name clashes here.
+			# Easiest thing to do now is delete the old app, and add a new one.
+			self.tree.deleteApp (appDetails ["name"])
+			self.tree.addApp (newAppDetails)
 
-		if not wasAccepted:
-			# User changed their mind.  Don't want to edit after all.
-			return
+			#if not wasAccepted:
+			## User changed their mind.  Don't want to edit after all.
+			#return
+		else:
+			originalName = appDetails ["name"]
 
+			newAppDetails, wasAccepted = self.editDetails (self.editGroupName,
+				appDetails)
+
+			self.tree.renameAndUpdateApp (originalName, appDetails)
 		#["slot"]
 
 		#print appDetails
 		#print newAppDetails
 
-		# Easiest thing to do now is delete the old app, and add a
-		# new one.
-		self.tree.deleteApp (appDetails ["name"])
-		self.tree.addApp (newAppDetails)
+		## Easiest thing to do now is delete the old app, and add a
+		## new one.
+		#self.tree.deleteApp (appDetails ["name"])
+		#self.tree.addApp (newAppDetails)
 
 		# Rebuild the buttons.
 		self.buildAppButtons()
@@ -520,16 +527,16 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		# Commit changes to disk.
 		self.tree.writeTreeToDisk (self.scriptDatabasePath)
 
-	def editApp (self, appDetails = {}):
-		newApp = NewApplication (appDetails)
+	#def editApp (self, appDetails = {}):
+		#newApp = NewApplication (appDetails)
 
-		# Wait for the dialog to be closed/canceld/accepted/
-		if not newApp.exec_():
-			return False, appDetails
+		## Wait for the dialog to be closed/canceld/accepted/
+		#if not newApp.exec_():
+			#return False, appDetails
 		
-		returnDetails = newApp.returnNewAppDetails()
+		#returnDetails = newApp.returnNewAppDetails()
 
-		return True, returnDetails
+		#return True, returnDetails
 
 	def swapSlots (self, appDetails1, appDetails2):
 
@@ -800,7 +807,7 @@ class NewApplication (QtGui.QDialog, radioManagement):
 			self.appDetails ["slot"] = 0
 
 		# We don't use this dialog for creating groups.
-		self.appDetails ["is_group"] = False
+		self.appDetails ["is_group"] = "False"
 
 		self.appDetails ["params"] = self.returnParams()
 

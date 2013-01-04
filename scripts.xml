@@ -5,13 +5,19 @@
     <children />
   </c>
   <a>
-    <slot>2</slot>
-    <is_group>True</is_group>
-    <children />
-  </a>
-  <d>
     <slot>3</slot>
     <is_group>True</is_group>
-    <children />
+    <children>None</children>
+  </a>
+  <d>
+    <slot>4</slot>
+    <is_group>True</is_group>
+    <children>None</children>
   </d>
+  <r>
+    <slot>2</slot>
+    <command>q</command>
+    <use_sudo>False</use_sudo>
+    <is_group>False</is_group>
+  </r>
 </applications>

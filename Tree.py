@@ -114,6 +114,17 @@ class Tree ():
 
 		return dictionary
 
+	def renameAndUpdateApp (self, originalName, newDetails):
+		# First, we'll update the name.
+		app = self.currentContext.find (originalName)
+
+		if app == None:
+			raise RuntimeError ("Could not find app '" + originalName + "' in current context '" + str (self.currentContext.tag) + "'.")
+
+		app.tag = newDetails ["name"]
+
+		# Next, update the details.
+		self.updateApp (newDetails)
 
 	def deleteApp (self, name):
 		# If an app with this name exists, modify it instead of creating a new one.
