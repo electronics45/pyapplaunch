@@ -106,10 +106,20 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 			closure = partial (self.appButtonClicked, app ["name"])
 			self.connect (button, SIGNAL ("clicked()"), closure)
 
+			# We want a different colour for groups so we can tell them
+			# appart.
+			if app ["is_group"] == "True":
+				self.setGroupButtonColour (button)
+
 			row += 1
 
-		#if defaultSlot != None:
-			#self.setCheckedRadioButtonBySlot (defaultSlot)
+		# Build a button to take us up one level if we're not in the root context.
+		if not self.tree.isRootContext():
+			button = QtGui.QPushButton ("Go Up One Level", self)
+			self.buttonLayout.addWidget (button, row, self.btnCol)
+			self.connect (button, SIGNAL ("clicked()"), self.upLvlBtnClicked)
+			#button.setStyleSheet("QPushButton {color:black; background-color: lightgrey;}")
+			self.setGroupButtonColour (button)
 
 	def clearAppButtons (self):
 		self.clearGridLayout (self.buttonLayout)
@@ -228,6 +238,9 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 	def showNewApp (self):
 		self.createNewButton (self.editAppDetails)
+
+	def setGroupButtonColour (self, button):
+		button.setStyleSheet("QPushButton {color:black; background-color: lightgrey;}")
 
 	def newGroupBtnClicked (self):
 		groupDetails = {}
@@ -359,6 +372,17 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 	def appButtonClicked (self, appName):
 		print "button pressed: " + str (appName)
+
+		appDetails = self.tree.getAppDetails (appName)
+
+		if appDetails ["is_group"] == "True":
+			self.tree.changeContextToGroup (appName)
+			self.buildAppButtons()
+			return
+
+	def upLvlBtnClicked (self):
+		self.tree.moveContextUpOneLevel()
+		self.buildAppButtons()
 
 	def swapSlots (self, appDetails1, appDetails2):
 

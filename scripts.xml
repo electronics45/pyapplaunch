@@ -2,7 +2,13 @@
   <c>
     <slot>1</slot>
     <is_group>True</is_group>
-    <children>None</children>
+    <children>None<b>
+        <slot>1</slot>
+        <use_sudo>False</use_sudo>
+        <is_group>False</is_group>
+        <command>b</command>
+      </b>
+    </children>
   </c>
   <a>
     <slot>3</slot>

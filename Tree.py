@@ -4,9 +4,11 @@ import json
 class Tree ():
 	def __init__ (self, treePath):
 		self.rootName = "applications"
-		
+
 		self.root = None
 		self.currentContext = None
+
+		self.contextTrail = []
 
 		try:
 			self.readTreeFromDisk (treePath)
@@ -46,21 +48,6 @@ class Tree ():
 
 		self.updateApp (appDetails)
 
-		## Now append the remaing properties as additional nested nodes.
-		#node = xml.Element ("command")
-		#node.text = str (appDetails ["command"])
-		#appNode.append (node)
-
-		## Other properties.
-		#if "use_sudo" in appDetails:
-			#node = xml.Element ("use_sudo")
-			#node.text = str (appDetails ["use_sudo"])
-			#appNode.append (node)
-		#if "slot" in appDetails:
-			#node = xml.Element ("slot")
-			#node.text = str (appDetails ["slot"])
-			#appNode.append (node)
-
 	def updateApp (self, appDetails):
 		appNode = self.currentContext.find (appDetails ["name"])
 
@@ -72,12 +59,6 @@ class Tree ():
 			# Note that the "name" node has already been used in the node's tag.
 			if key == "name":
 				continue
-			
-			#childNode = appNode.find (key)
-			#if childNode == None:
-				## Child node does not yet exist, so lets create it.
-				#childNode = xml.Element (key)
-				#appNode.append (childNode)
 
 			childNode = self.getNode (appNode, key)
 
@@ -143,22 +124,6 @@ class Tree ():
 			## Push this dictionary into the applications list.
 			applications.append (self.getAppDetails (app.tag))
 
-		# Now we'll order the applications based on their "slot" number.
-		# "lambda" just creates an unnamed function with "app" as a parameter.
-		#applications = sorted (applications, key = lambda app: app ["slot"])
-
-		## Finally, we'll reset the "slot" number in case an app was deleted, etc.
-		##for i in range (len (applications)):
-			##applications [i]["slot"] = i
-		#for i, app in enumerate (applications):
-			#app ["slot"] = str (i + 1) # "slot" is indexed from "1", not "0".
-
-			#self.currentContext.find (app ["name"]).find ("slot").text = str (i + 1)
-
-		# Finally, we must commit these slot numbers back to the tree to avoid disparity.
-		#for app in self.currentContext:
-			#app.find ("slot").text = applications
-		#for appDetails in applications	
 		#print applications
 
 		self.sortListBySlot (self.currentContext, applications)
@@ -193,9 +158,6 @@ class Tree ():
 
 		return node
 
-	#def setAppParam (self, appName, paramNumber, required = False, defaultValue = None):
-		#pass
-
 	def setAppParams (self, paramsNode, params):
 		
 		# Start by removing all the old params.
@@ -204,7 +166,6 @@ class Tree ():
 		
 		for param in params:
 			paramNode = self.getNode (paramsNode, param ["name"])
-			#paramNode.tag = "fet" #str (param ["name"])
 
 			# Iterate over all properties to be updated.
 			for key in param.keys():
@@ -213,17 +174,8 @@ class Tree ():
 					continue
 
 				childNode = self.getNode (paramNode, key)
-				#childNode = appNode.find (key)
-				#if childNode == None:
-					## Child node does not yet exist, so lets create it.
-					#childNode = xml.Element (key)
-					#appNode.append (childNode)
 
 				childNode.text = str (param [key])
-  
-	
-	#def deleteAppParam (self, appName, paramNumber):
-		#pass
 	
 	def getAppParams (self, paramsNode):
 		params = []
@@ -248,18 +200,20 @@ class Tree ():
 		
 		return params
 
-	#def createNewGroup (self, groupDetails):
-		## Create the new group node in the current context.
-		#groupNode = self.getNode (self.currentContext, groupDetails ["name"])
+	def changeContextToGroup (self, groupName):
+		self.contextTrail.append (self.currentContext)
 
-		## Identify this node as a group node.
-		#self.getNode (groupNode, "is_group").text = "True"
+		self.currentContext = self.currentContext.find (groupName).find("children")
 
-		## We'll use this node to hold all the applications when
-		## it becomes the "current context".
-		#self.getNode (groupNode, "children")
+	def isRootContext (self):
+		if self.currentContext == self.root:
+			return True
+		else:
+			return False
 
-		#self.getNode (groupNode, "slot").text = groupDetails ["slot"]
+	def moveContextUpOneLevel (self):
+		#self.currentContext = self.currentContext.findall ("..")
+		self.currentContext = self.contextTrail.pop()
 
 	def indent (self, elem, level = 0):
 		i = "\n" + level*"  "
