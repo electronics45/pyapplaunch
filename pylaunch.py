@@ -5,7 +5,7 @@ from PyQt4 import QtGui
 import signal
 import sys
 import os
-#import copy
+import re
 from functools import partial
 
 #import xml.etree.cElementTree as xml
@@ -233,6 +233,10 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		details ["name"], ok = QtGui.QInputDialog.getText (self, 'New Group',
 			'Enter a name for the new group:', QtGui.QLineEdit.Normal,
 			details ["name"])
+
+		# Check for a black name.  Assume they just don't want another group.
+		if details ["name"] == "":
+			return details, False
 
 		return details, ok
 
@@ -469,7 +473,6 @@ class NewApplication (QtGui.QDialog, radioManagement):
 		font.setPointSize (16)
 		label.setFont (font)
 
-
 		# Parameter box.
 		self.paramLayout = QtGui.QGridLayout()
 		vbox.addLayout (self.paramLayout)
@@ -536,14 +539,20 @@ class NewApplication (QtGui.QDialog, radioManagement):
 		if len (self.name.text()) == 0:
 			error.showMessage ("No name selected!")
 			error.exec_()
-		elif len (self.command.text()) == 0:
+			return
+
+		if len (self.command.text()) == 0:
 			error.showMessage ("No command selected!")
 			error.exec_()
-		elif self.areAllParamsValid() == False:
-			error.showMessage ("Parameter is missing a name!")
+			return
+
+		retval, errMsg = self.checkAllParamsAreValid()
+		if retval == False:
+			error.showMessage (errMsg)
 			error.exec_()
-		else:
-			self.accept()
+			return
+
+		self.accept()
 
 	def showGetFileDialog (self, textTarget):
 		text = QtGui.QFileDialog.getOpenFileName (self, 'command to run')
@@ -591,13 +600,38 @@ class NewApplication (QtGui.QDialog, radioManagement):
 		gridLayout.addWidget (showDialog, 1, self.paramReqCol)
 		self.setDefaultValue (showDialog, defaultValues, "file_selecter")
 
-	def areAllParamsValid (self):
-		# The only required value for a paramter is a label (name).
-		for param in self.returnParams():
-			if param ["name"] == "":
-				print "No name for param #" + str (param ["slot"])
-				return False
+		# We'll also add the symbol needed to know where to susbsitute the
+		# parameter, if it's not already in it's place.
+		if not self.isParamSymbolPresent (rowNum):
+			self.command.setText (self.command.text() + " %" + str (rowNum))
 
+	def checkAllParamsAreValid (self):
+		params = self.returnParams()
+		# The only required value for a paramter is a label (name).
+		for index, param in enumerate (params):
+			# Check the parameter has a name.
+			if param ["name"] == "":
+				return False, "No name for param #" + str (param ["slot"])
+
+			## Check that a valid place marker is in "command" edit box.
+			#paramCheck = re.search ("(?:[^%]|%%+)%" + \
+				#str (index + 1) + "(?:[^0-9]|$)", self.command.text())
+
+			#if paramCheck == None:
+			if not self.isParamSymbolPresent (index + 1):
+				return False, "Missing parameter symbol '%" + \
+					str (index + 1) + "' in command!"
+
+		return True, ""
+
+	def isParamSymbolPresent (self, paramNumber):
+		# Check that a valid place marker is in "command" edit box.
+		paramCheck = re.search ("(?:[^%]|%%+)%" + \
+			str (paramNumber) + "(?:[^0-9]|$)", self.command.text())
+
+		if paramCheck == None:
+			return False
+		else:
 			return True
 
 	def setDefaultValue (self, widget, defaultValues, key):
