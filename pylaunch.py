@@ -5,160 +5,13 @@ from PyQt4 import QtGui
 import signal
 import sys
 import os
+#import copy
+from functools import partial
 
 #import xml.etree.cElementTree as xml
 
 from radioManagement import radioManagement
 from Tree import Tree
-
-#class radioManagement ():
-	#def __init__ (self, radioCol):
-		#self.radioGroup = QtGui.QButtonGroup() # To store radio buttons.
-		#self.radioCol = radioCol
-
-	#def initDelAndMovButtons (self, vLayout):
-		### A horizontal rule.
-		##line = QtGui.QFrame (self)
-		##line.setFrameShape (QtGui.QFrame.HLine)
-		##line.setFrameShadow (QtGui.QFrame.Sunken)
-		##vLayout.addWidget (line)
-
-		## Add hbox for edit buttons.
-		#self.editHBox = QtGui.QHBoxLayout()
-		#self.editHBox.addStretch (1)
-		#vLayout.addLayout (self.editHBox)
-
-		#button = QtGui.QPushButton ("&Delete", self)
-		#self.editHBox.addWidget (button)
-		#self.connect (button, SIGNAL ("clicked()"), self.deleteButtonClicked)
-
-		#button = QtGui.QPushButton ("Move &Up", self)
-		#self.editHBox.addWidget (button)
-		#self.connect (button, SIGNAL ("clicked()"), self.moveUpButtonClicked)
-
-		#button = QtGui.QPushButton ("Move Do&wn", self)
-		#self.editHBox.addWidget (button)
-		#self.connect (button, SIGNAL ("clicked()"), self.moveDownButtonClicked)
-
-	#def buildRow (self, gridLayout, row = 0):
-		##row = gridLayout.rowCount() + 1
-
-		## Create the radio button for editing of the app.
-		#radio = QtGui.QRadioButton (str (row), self)
-		#gridLayout.addWidget (radio, row, self.radioCol)
-		#self.radioGroup.addButton(radio, row)
-
-	#def setCheckedRadioButtonByRow (self, row):
-		#print "row: " + str (row)
-		#for radio in self.radioGroup.buttons():
-			#if radio.text() == str (row):
-				#radio.setChecked (True)
-				#return
-
-		## Radio button not found.
-		#raise RuntimeError ("Could not find radio at row: " + str (row))
-
-	#def clearGridLayout (self, gridLayout):
-		## This function removes all of the automatically generated
-		## buttons and such from the layout.
-
-		## Remove the radio buttons fromt "radioGroup".
-		#for buttonEntry in self.radioGroup.buttons():
-			#self.radioGroup.removeButton (buttonEntry)
-
-		#for i in range (gridLayout.rowCount()):
-			#for j in range (gridLayout.columnCount()):
-				#widgetItem = gridLayout.itemAtPosition (i, j)
-				
-				#if widgetItem != None:
-					#widgetItem.widget().setParent (None)
-
-	#def getWidgetAtCheckedRow (self, gridLayout, column):
-		#checkedButtonId = self.radioGroup.checkedId()
-
-		#if checkedButtonId == -1:
-			## No radio buttons are checked.
-			#return None
-
-		## widged at "checkedButtonId"'s row.
-		#return gridLayout.itemAtPosition (checkedButtonId, column).widget()
-
-	#def deleteRow (self, gridLayout, rowNum):
-		## What we'll actually do, is leave the radio buttons in tact, but 
-		## delete all the other widgets in the row.  Then we'll move everything
-		## else up, and finally delete the last radio button.
-
-		#for i in range (gridLayout.columnCount()):
-			## Skip the radio button's column.
-			#if i == self.radioCol:
-				#continue
-
-			#widgetItem = gridLayout.itemAtPosition (rowNum, i)
-
-			#if widgetItem == None:
-				#continue
-
-			## Delete the widget.
-			#widgetItem.widget().setParent (None)
-
-		## Next, move everything up row by row.  +1 is to offset from the row we just deleted.
-		#for i in range (rowNum + 1, gridLayout.rowCount()):
-			#for j in range (gridLayout.columnCount()):
-				#if j == self.radioCol:
-					#continue
-
-				#widgetItem = gridLayout.itemAtPosition (i, j)
-
-				#if widgetItem == None:
-					#continue
-
-				#gridLayout.addWidget (widgetItem.widget(), i - 1, j)
-
-		## Finally, delete the last row.
-		#for i in range (gridLayout.columnCount()):
-			#widgetItem = gridLayout.itemAtPosition (gridLayout.rowCount() - 1, i)
-
-			#if widgetItem == None:
-				#continue
-
-			## Delete the widget.
-			#widgetItem.widget().setParent (None)
-
-	#def swapRows (self, gridLayout, row1, row2):
-		#row1Widgets = {}
-
-		#for i in range (gridLayout.columnCount()):
-			#widgetItem = gridLayout.itemAtPosition (row1, i)
-
-			#if widgetItem == None:
-				#continue
-
-			#widget1 = widgetItem.widget()
-			#widget2 = gridLayout.itemAtPosition (row2, i).widget()
-
-			## Is this the radio button widget?
-			#if i == self.radioCol:
-				## We don't want to move the radio buttons, but
-				## we do want change which is checked, if applicable.
-				#if widget1.isChecked():
-					#widget2.setChecked (True)
-				#elif widget2.isChecked():
-					#widget1.setChecked (True)
-
-				#continue
-
-			#gridLayout.addWidget (widget2, row1, i)
-			#gridLayout.addWidget (widget1, row2, i)
-
-
-	#def deleteButtonClicked (self):
-		#pass
-	
-	#def moveUpButtonClicked (self):
-		#pass
-	
-	#def moveDownButtonClicked (self):
-		#pass
 
 class MainWindow (QtGui.QMainWindow, radioManagement):
 	def __init__ (self):
@@ -228,6 +81,8 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 	def buildAppButtons (self, defaultSlot = None):
 		row = 1
 
+		#self.buttonNames = {}
+
 		# First make sure all autogenerated buttons and such are removed.
 		self.clearAppButtons()
 
@@ -245,6 +100,11 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 			# Create the button.
 			button = QtGui.QPushButton (app ["name"], self)
 			self.buttonLayout.addWidget (button, row, self.btnCol)
+
+			# Bind that button to a method which calls another method,
+			# passing the name of the button being clicked to it.
+			closure = partial (self.appButtonClicked, app ["name"])
+			self.connect (button, SIGNAL ("clicked()"), closure)
 
 			row += 1
 
@@ -351,7 +211,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 		# Wait for the dialog to be closed/canceld/accepted/
 		if not newApp.exec_():
-			return False, appDetails
+			return defaultDetails, False
 		
 		returnDetails = newApp.returnNewAppDetails()
 
@@ -367,38 +227,6 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		return details, ok
 
 	def showNewApp (self):
-		#wasAccepted, appDetails = self.editApp ({})
-
-		## Has the user cancelled?
-		#if not wasAccepted:
-			#return
-
-		## Check for name clashes.
-		## Keep Retrying until the user succeeds.
-		#while self.tree.doesAppExistInCurrentContext (appDetails ["name"]) == True:
-			#error = QtGui.QErrorMessage(self)
-			#error.showMessage ("Script with that name already exists!")
-			#error.exec_()
-
-			#if not wasAccepted:
-				#return  # User changed their mind.
-
-			#wasAccepted, appDetails = self.editApp (appDetails)
-
-		## Set the slot to 1 past the number of app registered here.
-		#appDetails ["slot"] = self.tree.getNumApps() + 1
-
-		##print self.tree.getNumApps()
-
-		## Add this new app to the tree.
-		#self.tree.addApp (appDetails)
-
-		## Rebuild the buttons.
-		#self.buildAppButtons()
-
-		## Save new configuration to disk.
-		#self.tree.writeTreeToDisk (self.scriptDatabasePath)
-
 		self.createNewButton (self.editAppDetails)
 
 	def newGroupBtnClicked (self):
@@ -436,15 +264,6 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 				appDetails)
 
 			self.tree.renameAndUpdateApp (originalName, appDetails)
-		#["slot"]
-
-		#print appDetails
-		#print newAppDetails
-
-		## Easiest thing to do now is delete the old app, and add a
-		## new one.
-		#self.tree.deleteApp (appDetails ["name"])
-		#self.tree.addApp (newAppDetails)
 
 		# Rebuild the buttons.
 		self.buildAppButtons()
@@ -537,6 +356,9 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		#returnDetails = newApp.returnNewAppDetails()
 
 		#return True, returnDetails
+
+	def appButtonClicked (self, appName):
+		print "button pressed: " + str (appName)
 
 	def swapSlots (self, appDetails1, appDetails2):
 
