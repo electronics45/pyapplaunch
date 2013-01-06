@@ -20,6 +20,8 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.btnCol = 1
 		self.radioCol = 0
 
+		self.upDirShortCutKey = "/"
+
 		radioManagement.__init__ (self, self.radioCol)
 
 		self.pylaunchDir = os.path.dirname (os.path.abspath(__file__))
@@ -125,10 +127,8 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 			self.connect (button, SIGNAL ("clicked()"), self.upLvlBtnClicked)
 			self.setGroupButtonColour (button)
 
-			# This button shall have a shortcut key of carrot (`).
-			#button.setShortcut (QtGui.QKeySequence ("`"))
-			# And also forward slash, in case we feel like using the numpad.
-			button.setShortcut (QtGui.QKeySequence ("/"))
+			# This button shall also have a shortcut key.
+			button.setShortcut (QtGui.QKeySequence (self.upDirShortCutKey))
 
 	def clearAppButtons (self):
 		self.clearGridLayout (self.buttonLayout)
@@ -210,13 +210,18 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 		# Check for name clashes.
 		# Keep Retrying until the user succeeds.
-		while self.tree.doesAppExistInCurrentContext (details ["name"]) == True:
+		while self.tree.doesAppExistInCurrentContext (details ["name"]) == True or \
+			details ["name"][0].isdigit():
 			if details ["name"] == originalName:
 				# Looks like the user decided to keep the original name.
 				break
 
-			error = QtGui.QErrorMessage(self)
-			error.showMessage ("Script with that name already exists!")
+			error = QtGui.QErrorMessage (self)
+			if details ["name"][0].isdigit():
+				error.showMessage ("Script name can not start with a number!")
+			else:
+				error.showMessage ("Script with that name already exists!")
+				
 			error.exec_()
 
 			details, ok = editMethod (details)
@@ -248,7 +253,8 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		if details ["name"] == "":
 			return details, False
 
-		#print details
+		# Normalise values to strings.
+		details ["name"] = str (details ["name"])
 
 		return details, ok
 
@@ -690,11 +696,11 @@ class NewApplication (QtGui.QDialog, radioManagement):
 
 	def returnNewAppDetails (self):
 		#newApp = {}
-		self.appDetails ["name"] = self.name.text()
-		self.appDetails ["command"] = self.command.text()
+		self.appDetails ["name"] = str (self.name.text())
+		self.appDetails ["command"] = str (self.command.text())
 
 		if not "use_sudo" in self.appDetails:
-			self.appDetails ["use_sudo"] = False
+			self.appDetails ["use_sudo"] = str (False)
 		if not "slot" in self.appDetails:
 			self.appDetails ["slot"] = 0
 

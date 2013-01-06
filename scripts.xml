@@ -16,4 +16,15 @@
       </a>
     </children>
   </b>
+  <a1>
+    <slot>3</slot>
+    <is_group>True</is_group>
+    <children />
+  </a1>
+  <f1a>
+    <slot>4</slot>
+    <command>a</command>
+    <use_sudo>False</use_sudo>
+    <is_group>False</is_group>
+  </f1a>
 </applications>
