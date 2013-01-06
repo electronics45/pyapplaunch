@@ -74,8 +74,6 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		newGroupBtn = QtGui.QPushButton ("New &Group", self)
 		newLayout.addWidget (newGroupBtn)
 		self.connect (newGroupBtn, SIGNAL ("clicked()"), self.newGroupBtnClicked)
-
-		newGroupBtn.setShortcut (QtGui.QKeySequence ("1"))#, self, self.close))
 		
 		self.mainWidget.setLayout (vbox)
 		self.setWindowTitle ("PyLaunch")
@@ -108,6 +106,11 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 			closure = partial (self.appButtonClicked, app ["name"])
 			self.connect (button, SIGNAL ("clicked()"), closure)
 
+			# Add a correspinding number as a shortcut key, provided we
+			# Do not go past "9"
+			if row <= 9:
+				button.setShortcut (QtGui.QKeySequence (str(row)))
+
 			# We want a different colour for groups so we can tell them
 			# appart.
 			if app ["is_group"] == "True":
@@ -120,8 +123,12 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 			button = QtGui.QPushButton ("Go Up One Level", self)
 			self.buttonLayout.addWidget (button, row, self.btnCol)
 			self.connect (button, SIGNAL ("clicked()"), self.upLvlBtnClicked)
-			#button.setStyleSheet("QPushButton {color:black; background-color: lightgrey;}")
 			self.setGroupButtonColour (button)
+
+			# This button shall have a shortcut key of carrot (`).
+			#button.setShortcut (QtGui.QKeySequence ("`"))
+			# And also forward slash, in case we feel like using the numpad.
+			button.setShortcut (QtGui.QKeySequence ("/"))
 
 	def clearAppButtons (self):
 		self.clearGridLayout (self.buttonLayout)

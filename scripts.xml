@@ -1,18 +1,19 @@
 <applications>
   <a>
     <slot>1</slot>
-    <is_group>True</is_group>
-    <children>None</children>
-  </a>
-  <c>
-    <slot>2</slot>
     <use_sudo>False</use_sudo>
     <is_group>False</is_group>
-    <command>c</command>
-  </c>
-  <v>
-    <slot>3</slot>
+    <command>a</command>
+  </a>
+  <b>
+    <slot>2</slot>
     <is_group>True</is_group>
-    <children />
-  </v>
+    <children>
+      <a>
+        <slot>1</slot>
+        <is_group>True</is_group>
+        <children />
+      </a>
+    </children>
+  </b>
 </applications>
