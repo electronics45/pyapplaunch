@@ -1,61 +1,18 @@
 <applications>
   <a>
     <slot>1</slot>
-    <use_sudo>False</use_sudo>
-    <is_group>False</is_group>
-    <command>a %1</command>
-    <params>
-      <b>
-        <default />
-        <slot>1</slot>
-        <required>False</required>
-        <file_selecter>False</file_selecter>
-      </b>
-    </params>
+    <is_group>True</is_group>
+    <children>None</children>
   </a>
-  <b>
+  <c>
     <slot>2</slot>
     <use_sudo>False</use_sudo>
     <is_group>False</is_group>
-    <command>b %1 %2</command>
-    <params>
-      <b>
-        <default />
-        <slot>1</slot>
-        <required>True</required>
-        <file_selecter>True</file_selecter>
-      </b>
-      <hr>
-        <default />
-        <slot>2</slot>
-        <required>False</required>
-        <file_selecter>True</file_selecter>
-      </hr>
-    </params>
-  </b>
-  <ned>
+    <command>c</command>
+  </c>
+  <v>
     <slot>3</slot>
     <is_group>True</is_group>
-    <children>
-      <be>
-        <slot>1</slot>
-        <is_group>True</is_group>
-        <children />
-      </be>
-      <67>
-        <slot>2</slot>
-        <use_sudo>False</use_sudo>
-        <is_group>False</is_group>
-        <command>s %1</command>
-        <params>
-          <a>
-            <default />
-            <slot>1</slot>
-            <required>False</required>
-            <file_selecter>False</file_selecter>
-          </a>
-        </params>
-      </67>
-    </children>
-  </ned>
+    <children />
+  </v>
 </applications>
