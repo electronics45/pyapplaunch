@@ -12,6 +12,7 @@ from functools import partial
 
 from radioManagement import radioManagement
 from Tree import Tree
+from ApplicationLauncher import ApplicationLauncher
 
 class MainWindow (QtGui.QMainWindow, radioManagement):
 	def __init__ (self):
@@ -21,6 +22,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.radioCol = 0
 
 		self.upDirShortCutKey = "/"
+		self.launchProgram = "/opt/trinity/konsole -e"
 
 		radioManagement.__init__ (self, self.radioCol)
 
@@ -344,8 +346,8 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		activeApp = self.tree.getAppDetails (activeAppName)
 		nextApp = self.tree.getAppDetails (nextAppName)
 
-		print activeApp
-		print nextApp
+		#print activeApp
+		#print nextApp
 		self.swapSlots (activeApp, nextApp)
 
 		# Use slot of moved app's (new) position for default checked radio.
@@ -402,6 +404,9 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 			self.buildAppButtons()
 			return
 
+		launcher = ApplicationLauncher (appDetails, self.launchProgram)
+		launcher.waitForParamsAndExecute()
+
 	def upLvlBtnClicked (self):
 		self.tree.moveContextUpOneLevel()
 		self.buildAppButtons()
@@ -419,7 +424,6 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.tree.updateApp (appDetails2)
 
 class NewApplication (QtGui.QDialog, radioManagement):
-	
 	def __init__ (self, appDefaultDetails):
 		super (NewApplication, self).__init__()
 
@@ -442,11 +446,8 @@ class NewApplication (QtGui.QDialog, radioManagement):
 		self.setValues (appDefaultDetails)
 
 	def initUI (self):
-		#self.radioGroup = QtGui.QButtonGroup() # To store radio buttons.
-
-		grid = QtGui.QGridLayout()
 		vbox = QtGui.QVBoxLayout()
-		#vbox.addStretch (1)
+		grid = QtGui.QGridLayout()
 
 		vbox.addLayout (grid)
 
@@ -519,12 +520,9 @@ class NewApplication (QtGui.QDialog, radioManagement):
 		# Control buttons.
 		self.cancelBtn = QtGui.QPushButton ("&cancel", self)
 		controlButtonLayout.addWidget (self.cancelBtn)
-		#self.cancelBtn.clicked.connect (SLOT ('close()'))
 		self.connect (self.cancelBtn, SIGNAL ('clicked()'), SLOT ('reject()'))
 
 		self.okBtn = QtGui.QPushButton ("&ok", self)
-		#okBtnWidth = self.cmdBtn.fontMetrics().boundingRect ("ok").width()
-		#self.okBtn.setMaximumWidth (okBtnWidth + 15)
 		self.okBtn.setDefault(True)
 		controlButtonLayout.addWidget (self.okBtn)
 		self.okBtn.clicked.connect (self.okBtnClicked)
@@ -542,10 +540,10 @@ class NewApplication (QtGui.QDialog, radioManagement):
 		# Set the parameters.
 		if "params" in values:
 			for param in values ["params"]:
-				print "param: " + str(param)
+				#print "param: " + str(param)
 				self.addParameter (param)
 
-		print values
+		#print values
 
 	def cmdBtnClicked (self):
 		self.showGetFileDialog (self.command)
@@ -614,9 +612,9 @@ class NewApplication (QtGui.QDialog, radioManagement):
 		self.setDefaultValue (defaultVal, defaultValues, "default")
 
 		# Show file dialog button checkbox.
-		showDialog = QtGui.QCheckBox ("file selecter?", self)
+		showDialog = QtGui.QCheckBox ("file selector?", self)
 		gridLayout.addWidget (showDialog, 1, self.paramReqCol)
-		self.setDefaultValue (showDialog, defaultValues, "file_selecter")
+		self.setDefaultValue (showDialog, defaultValues, "file_selector")
 
 		# We'll also add the symbol needed to know where to susbsitute the
 		# parameter, if it's not already in it's place.
@@ -654,7 +652,7 @@ class NewApplication (QtGui.QDialog, radioManagement):
 
 	def setDefaultValue (self, widget, defaultValues, key):
 		if not key in defaultValues:
-			print "key not found"
+			#print "key not found"
 			return
 
 		# Are we processing a checkbox?
@@ -686,7 +684,7 @@ class NewApplication (QtGui.QDialog, radioManagement):
 			widget = paramGrid.itemAtPosition (1, self.gridLabelCol).widget()
 			param ["default"] = widget.text()
 			widget = paramGrid.itemAtPosition (1, self.paramReqCol).widget()
-			param ["file_selecter"] = widget.isChecked()
+			param ["file_selector"] = widget.isChecked()
 			param ["slot"] = rowCount
 
 			params.append (param)
