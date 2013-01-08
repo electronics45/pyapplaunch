@@ -1,7 +1,6 @@
 <applications>
   <a>
     <slot>1</slot>
-    <command>b %1 %2</command>
     <params>
       <findted>
         <default>ted</default>
@@ -16,6 +15,7 @@
         <file_selector>True</file_selector>
       </anothrt>
     </params>
+    <command>%1b %2</command>
     <use_sudo>False</use_sudo>
     <is_group>False</is_group>
   </a>

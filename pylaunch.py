@@ -642,7 +642,7 @@ class NewApplication (QtGui.QDialog, radioManagement):
 
 	def isParamSymbolPresent (self, paramNumber):
 		# Check that a valid place marker is in "command" edit box.
-		paramCheck = re.search ("(?:[^%]|%%+)%" + \
+		paramCheck = re.search ("(?:[^%]|%%+|^)%" + \
 			str (paramNumber) + "(?:[^0-9]|$)", self.command.text())
 
 		if paramCheck == None:
