@@ -155,7 +155,7 @@ class Tree ():
 
 		#print applications
 
-		self.sortListBySlot (self.currentContext, applications)
+		applications = self.sortListBySlot (self.currentContext, applications)
 
 		return applications
 
@@ -168,6 +168,7 @@ class Tree ():
 
 			#parentNode.find (app ["name"]).find ("slot").text = str (i + 1)
 			self.getNodeByName (app ["name"], parentNode).find ("slot").text = str (i + 1)
+		return theList
 	def getNumApps (self):
 		# Is there not a nicer way to do this?
 		return len (list (self.currentContext))
@@ -225,8 +226,6 @@ class Tree ():
 
 		for paramNode in paramsNode:
 			param = {}
-
-			#param ["name"] = paramNode.tag
 
 			# Gather all the properties of the paramater.
 			for paramChild in paramNode:
