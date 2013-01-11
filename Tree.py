@@ -195,19 +195,26 @@ class Tree ():
 		return node
 
 	def setAppParams (self, paramsNode, params):
-		
+
 		# Start by removing all the old params.
 		for node in paramsNode:
 			paramsNode.remove (param)
-		
+
 		for param in params:
-			paramNode = self.getNode (paramsNode, param ["name"])
+			#paramNode = self.getNode (paramsNode, param ["name"])
+			#paramNode = self.getNodeByName (param ["name"], paramsNode)
+
+			paramNode = xml.Element ("param")
+			paramsNode.append (paramNode)
+			#nameNode = xml.Element (param ["name"])
+			#nameNode.text = xml.Element (param ["name"])
+			#paramNode.append (nameNode)
 
 			# Iterate over all properties to be updated.
 			for key in param.keys():
 				# Note that the "name" node has already been used in the node's tag.
-				if key == "name":
-					continue
+				#if key == "name":
+					#continue
 
 				childNode = self.getNode (paramNode, key)
 
@@ -219,7 +226,7 @@ class Tree ():
 		for paramNode in paramsNode:
 			param = {}
 
-			param ["name"] = paramNode.tag
+			#param ["name"] = paramNode.tag
 
 			# Gather all the properties of the paramater.
 			for paramChild in paramNode:

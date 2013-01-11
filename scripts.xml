@@ -1,62 +1,19 @@
 <applications>
   <application>
-    <name>b</name>
-    <slot>2</slot>
-    <is_group>False</is_group>
-    <use_sudo>False</use_sudo>
-    <command>b</command>
-    <name>b</name>
-    <slot>2</slot>
-    <command>b</command>
-    <use_sudo>False</use_sudo>
-    <is_group>False</is_group>
-    <name>b</name>
-  </application>
-  <application>
-    <name>ab</name>
+    <name>a</name>
     <slot>1</slot>
-    <name>ab</name>
+    <name>a</name>
     <use_sudo>False</use_sudo>
     <is_group>False</is_group>
     <command>a %1</command>
     <params>
-      <a>
-        <default />
+      <param>
+        <default>ret</default>
         <slot>1</slot>
         <required>False</required>
         <file_selector>False</file_selector>
-      </a>
+        <name>b h</name>
+      </param>
     </params>
-  </application>
-  <application>
-    <name>g</name>
-    <slot>3</slot>
-    <is_group>True</is_group>
-    <children>
-      <application>
-        <name>a</name>
-        <slot>1</slot>
-        <name>a</name>
-        <use_sudo>False</use_sudo>
-        <is_group>False</is_group>
-        <command>a</command>
-      </application>
-      <application>
-        <name>b</name>
-        <slot>2</slot>
-        <is_group>True</is_group>
-        <children />
-        <name>b</name>
-      </application>
-    </children>
-    <name>g</name>
-  </application>
-  <application>
-    <name>a a</name>
-    <slot>4</slot>
-    <name>a a</name>
-    <use_sudo>False</use_sudo>
-    <is_group>False</is_group>
-    <command>b</command>
   </application>
 </applications>
