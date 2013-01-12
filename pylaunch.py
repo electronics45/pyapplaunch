@@ -22,7 +22,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.radioCol = 0
 
 		self.upDirShortCutKey = "/"
-		self.launchProgram = "/opt/trinity/konsole -e"
+		self.launchProgram = "/opt/trinity/bin/konsole -e"
 
 		radioManagement.__init__ (self, self.radioCol)
 
