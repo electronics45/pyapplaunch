@@ -122,9 +122,6 @@ class radioManagement ():
 			a = widgetItem1.widget()
 			b = widgetItem2.widget()
 
-			#widget1 = widgetItem.widget()
-			#widget2 = gridLayout.itemAtPosition (row2, i).widget()
-
 			# Is this the radio button widget?
 			if i == self.radioCol:
 				# We don't want to move the radio buttons, but
@@ -136,8 +133,6 @@ class radioManagement ():
 
 				continue
 
-			#gridLayout.addWidget (widget2, row1, i)
-			#gridLayout.addWidget (widget1, row2, i)
 			self.addWidgetItem (gridLayout, widgetItem2, row1, i)
 			self.addWidgetItem (gridLayout, widgetItem1, row2, i)
 
@@ -165,10 +160,6 @@ class radioManagement ():
 			for i in range (layout.rowCount()):
 				for j in range (layout.columnCount()):
 
-					#widgetItem = layout.itemAtPosition (i, j)
-
-					#if widgetItem == None:
-						#continue
 					self.deleteWidgetItem (layout.itemAtPosition (i, j))
 
 		# Finally, delete the empty layout.

@@ -43,10 +43,10 @@ class Tree ():
 
 	def addApp (self, appDetails):
 		# Create a child element, and append it to the root node.
-		#appNode = xml.Element (str (appDetails ["name"]))
 		appNode = xml.Element ("application")
 		self.currentContext.append (appNode)
 
+		# Append the "name" node first which is needed to identify this node.
 		nameNode = xml.Element ("name")
 		nameNode.text = str (appDetails ["name"])
 		appNode.append (nameNode)
@@ -54,8 +54,6 @@ class Tree ():
 		self.updateApp (appDetails)
 
 	def getNodeByName (self, name, parentNode = None):
-		# Get a list of all application nodes.
-		#appNodes = self.currentContext.findall ("./application")
 		if parentNode == None:
 			parentNode = self.currentContext
 
@@ -69,7 +67,6 @@ class Tree ():
 		return None
 
 	def updateApp (self, appDetails):
-		#appNode = self.currentContext.find (appDetails ["name"])
 		appNode = self.getNodeByName (appDetails ["name"])
 
 		if appNode == None:
@@ -77,11 +74,6 @@ class Tree ():
 
 		# Iterate over all properties to be updated.
 		for key in appDetails.keys():
-			## Note that the "name" node has already been used in the node's tag.
-			## Note that "name tag" 
-			#if key == "name":
-				#continue
-
 			childNode = self.getNode (appNode, key)
 
 			if key == "params":
@@ -100,14 +92,10 @@ class Tree ():
 	def getAppDetails (self, appName):
 		dictionary = {}
 
-		#app = self.currentContext.find (appName)
 		app = self.getNodeByName (appName)
 
 		if app == None:
 			raise RuntimeError ("Could not find app '" + appName + "' in current context '" + str (self.currentContext.tag) + "'.")
-
-		# Start with the applications name (stored as tag).
-		#dictionary ["name"] = app.tag
 
 		# Build a dictionary of all the apps child elements.
 		for appProperty in app:
@@ -120,21 +108,17 @@ class Tree ():
 
 	def renameAndUpdateApp (self, originalName, newDetails):
 		# First, we'll update the name.
-		#app = self.currentContext.find (originalName)
 		app = self.getNodeByName (originalName)
 
 		if app == None:
 			raise RuntimeError ("Could not find app '" + originalName + "' in current context '" + str (self.currentContext.tag) + "'.")
 
-		#app.tag = newDetails ["name"]
 		app.find ("name").text = newDetails ["name"]
 
 		# Next, update the details.
 		self.updateApp (newDetails)
 
 	def deleteApp (self, name):
-		# If an app with this name exists, modify it instead of creating a new one.
-		#appNode = self.currentContext.find (name)
 		appNode = self.getNodeByName (name)
 
 		if appNode == None:
@@ -147,13 +131,8 @@ class Tree ():
 
 		# Build a list of dictionaries from the tree's nodes of the app's.
 		for app in self.currentContext:
-			## Push this dictionary into the applications list.
-			#applications.append (self.getAppDetails (app.tag))
+			# Push this dictionary into the applications list.
 			applications.append (self.getAppDetails (app.find ("name").text))
-			#details = self.getAppDetails (self.getNodeByName ("name", app).text)
-			#applications.append (details)
-
-		#print applications
 
 		applications = self.sortListBySlot (self.currentContext, applications)
 
@@ -166,32 +145,27 @@ class Tree ():
 		for i, app in enumerate (theList):
 			app ["slot"] = str (i + 1) # "slot" is indexed from "1", not "0".
 
-			#parentNode.find (app ["name"]).find ("slot").text = str (i + 1)
-			self.getNodeByName (app ["name"], parentNode).find ("slot").text = str (i + 1)
+			slotNode = self.getNodeByName (app ["name"], parentNode).find ("slot")
+			slotNode.text = str (i + 1)
 		return theList
+
 	def getNumApps (self):
-		# Is there not a nicer way to do this?
+		# TODO: Is there not a nicer way to do this?
 		return len (list (self.currentContext))
 
 	def doesAppExistInCurrentContext (self, appName):
-		#if self.currentContext.find (appName):
 		if self.getNodeByName (appName):
 			return True
 		else:
 			return False
 
 	def getNode (self, parent, key):
-		#node = parent.find (key)
 		node = self.getNodeByName (key, parent)
+
 		if node == None:
 			# Child node does not yet exist, so lets create it.
 			node = xml.Element (str (key))
-			#node = xml.Element ("application")
 			parent.append (node)
-
-			#nameNode = xml.Element ("name")
-			#nameNote.text = keys
-			#parentNode.
 
 		return node
 
@@ -201,26 +175,17 @@ class Tree ():
 		for node in paramsNode:
 			paramsNode.remove (param)
 
+		# Rebuild the param tree.
 		for param in params:
-			#paramNode = self.getNode (paramsNode, param ["name"])
-			#paramNode = self.getNodeByName (param ["name"], paramsNode)
-
 			paramNode = xml.Element ("param")
 			paramsNode.append (paramNode)
-			#nameNode = xml.Element (param ["name"])
-			#nameNode.text = xml.Element (param ["name"])
-			#paramNode.append (nameNode)
 
 			# Iterate over all properties to be updated.
 			for key in param.keys():
-				# Note that the "name" node has already been used in the node's tag.
-				#if key == "name":
-					#continue
-
 				childNode = self.getNode (paramNode, key)
 
 				childNode.text = str (param [key])
-	
+
 	def getAppParams (self, paramsNode):
 		params = []
 
@@ -237,15 +202,11 @@ class Tree ():
 
 			params.append (param)
 
-		# Sort the parameters.
-		#self.sortListBySlot (paramsNode)
-		
 		return params
 
 	def changeContextToGroup (self, groupName):
 		self.contextTrail.append (self.currentContext)
 
-		#self.currentContext = self.currentContext.find (groupName).find("children")
 		self.currentContext = self.getNodeByName (groupName).find("children")
 
 	def isRootContext (self):
@@ -255,7 +216,6 @@ class Tree ():
 			return False
 
 	def moveContextUpOneLevel (self):
-		#self.currentContext = self.currentContext.findall ("..")
 		self.currentContext = self.contextTrail.pop()
 
 	def indent (self, elem, level = 0):
