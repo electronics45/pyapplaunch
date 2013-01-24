@@ -33,7 +33,27 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 		self.buildAppButtons()
 
+		self.create_sys_tray()
+
+	def create_sys_tray (self):
+		self.sysTray = QtGui.QSystemTrayIcon (self)
+		self.sysTray.setIcon (self.windowIcon())
+		self.sysTray.setVisible (True)
+		self.connect (self.sysTray, SIGNAL ("activated (QSystemTrayIcon::ActivationReason)"), self.on_sys_tray_activated)
+
+		self.sysTrayMenu = QtGui.QMenu (self)
+		act = self.sysTrayMenu.addAction ("FOO")
+
+	def on_sys_tray_activated (self, reason):
+		if self.isHidden() == False:
+			self.hide()
+		else:
+			self.show()
+
 	def initUI (self):
+		# Set the icon for the window.
+		self.setWindowIcon (QtGui.QIcon ('icon.png'))
+
 		QtGui.QShortcut (QtGui.QKeySequence ("Esc"), self, self.close)
 		QtGui.QShortcut (QtGui.QKeySequence ("Ctrl+Q"), self, self.close)
 
