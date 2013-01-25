@@ -41,21 +41,36 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.sysTray.setVisible (True)
 		self.connect (self.sysTray, SIGNAL ("activated (QSystemTrayIcon::ActivationReason)"), self.on_sys_tray_activated)
 
-		self.sysTrayMenu = QtGui.QMenu (self)
-		act = self.sysTrayMenu.addAction ("FOO")
+		menu = QtGui.QMenu (self)
+		exitAction = menu.addAction (self.exitAction)
+
+		self.sysTray.setContextMenu (menu)
 
 	def on_sys_tray_activated (self, reason):
-		if self.isHidden() == False:
-			self.hide()
-		else:
-			self.show()
+		print "reason: " + str (reason)
+		
+		if reason == 3:
+			if self.isHidden() == False:
+				self.hide()
+			else:
+				self.show()
 
 	def initUI (self):
 		# Set the icon for the window.
 		self.setWindowIcon (QtGui.QIcon ('icon.png'))
 
-		QtGui.QShortcut (QtGui.QKeySequence ("Esc"), self, self.close)
+		QtGui.QShortcut (QtGui.QKeySequence ("Esc"), self, self.hide)
 		QtGui.QShortcut (QtGui.QKeySequence ("Ctrl+Q"), self, self.close)
+
+		# Exit action for menus.
+		self.exitAction = QtGui.QAction(QtGui.QIcon ('exit.png'), '&Exit', self)
+		self.exitAction.setShortcut ('Ctrl+Q')
+		self.exitAction.setStatusTip ('Exit application')
+		self.exitAction.triggered.connect (QtGui.qApp.quit)
+
+		#menubar = self.menuBar()
+		#fileMenu = menubar.addMenu ('&File')
+		#fileMenu.addAction (self.exitAction)
 
 		self.mainWidget = QtGui.QWidget (self) # dummy to contain the layout.
 		self.setCentralWidget (self.mainWidget)
