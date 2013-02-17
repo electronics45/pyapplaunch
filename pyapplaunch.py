@@ -8,9 +8,12 @@ import os
 import re
 from functools import partial
 
+from DbusInterface import DbusInterface
 from radioManagement import radioManagement
 from Tree import Tree
 from ApplicationLauncher import ApplicationLauncher
+
+#from dbus.mainloop.qt import DBusQtMainLoop
 
 class MainWindow (QtGui.QMainWindow, radioManagement):
 	def __init__ (self):
@@ -722,8 +725,12 @@ class NewApplication (QtGui.QDialog, radioManagement):
 if __name__ == '__main__':
 	# Re-enable "Ctrl+C" terminal interuption.
 	signal.signal (signal.SIGINT, signal.SIG_DFL)
-	
+
 	app = QtGui.QApplication (sys.argv)
+
 	main = MainWindow()
 	main.show()
+	
+	dbusInterface = DbusInterface (main)
+	
 	sys.exit (app.exec_())
