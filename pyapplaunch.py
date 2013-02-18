@@ -37,6 +37,14 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.buildAppButtons()
 
 		self.create_sys_tray()
+		
+		self.setAttribute(Qt.WA_DeleteOnClose)
+
+	def closeEvent (self, event):
+		# Make sure all windows are closed when main window closes.
+		#sys.exit()
+		self.hide()
+		event.ignore()
 
 	def create_sys_tray (self):
 		self.sysTray = QtGui.QSystemTrayIcon (self)
@@ -63,7 +71,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.setWindowIcon (QtGui.QIcon ('icon.png'))
 
 		QtGui.QShortcut (QtGui.QKeySequence ("Esc"), self, self.hide)
-		QtGui.QShortcut (QtGui.QKeySequence ("Ctrl+Q"), self, self.close)
+		QtGui.QShortcut (QtGui.QKeySequence ("Ctrl+Q"), self, sys.exit)
 
 		# Exit action for menus.
 		self.exitAction = QtGui.QAction(QtGui.QIcon ('exit.png'), '&Exit', self)
@@ -243,6 +251,11 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 	def editAppDetails (self, defaultDetails):
 		newApp = NewApplication (defaultDetails)
 
+		#self.destroyed.connect (newApp.close)
+		#self.destroyed.connect (newApp.destroy)
+		#self.connec
+		self.connect (self, SIGNAL ("closing()"), newApp.close)
+
 		# Wait for the dialog to be closed/canceld/accepted/
 		if not newApp.exec_():
 			return defaultDetails, False
@@ -418,12 +431,13 @@ class NewApplication (QtGui.QDialog, radioManagement):
 
 		self.radioCol = 0
 		self.gridGridCol = 1
-		
 		self.gridLabelLabelCol = 0
 		self.gridLabelCol = 1
 		self.paramReqCol = 2
 
 		radioManagement.__init__ (self, self.radioCol)
+		
+		self.setAttribute(Qt.WA_DeleteOnClose)
 
 		self.initUI()
 
