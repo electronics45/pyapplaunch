@@ -2,9 +2,10 @@ from PyQt4.QtCore import *
 from PyQt4 import QtGui
 
 class radioManagement ():
-	def __init__ (self, radioCol):
+	def __init__ (self, radioCol, gridLayout):
 		self.radioGroup = QtGui.QButtonGroup() # To store radio buttons.
 		self.radioCol = radioCol
+		self.gridLayout = gridLayout
 
 	def initDelAndMovButtons (self, vLayout):
 
@@ -40,7 +41,7 @@ class radioManagement ():
 		# Radio button not found.
 		raise RuntimeError ("Could not find radio at row: " + str (row))
 
-	def clearGridLayout (self, gridLayout):
+	def clearGridLayout (self):
 		# This function removes all of the automatically generated
 		# buttons and such from the layout.
 
@@ -48,14 +49,14 @@ class radioManagement ():
 		for buttonEntry in self.radioGroup.buttons():
 			self.radioGroup.removeButton (buttonEntry)
 
-		for i in range (gridLayout.rowCount()):
-			for j in range (gridLayout.columnCount()):
-				widgetItem = gridLayout.itemAtPosition (i, j)
+		for i in range (self.gridLayout.rowCount()):
+			for j in range (self.gridLayout.columnCount()):
+				widgetItem = self.gridLayout.itemAtPosition (i, j)
 				
 				if widgetItem != None:
 					widgetItem.widget().setParent (None)
 
-	def getWidgetAtCheckedRow (self, gridLayout, column):
+	def getWidgetAtCheckedRow (self, column):
 		checkedButtonId = self.radioGroup.checkedId()
 
 		if checkedButtonId == -1:
@@ -63,58 +64,58 @@ class radioManagement ():
 			return None
 
 		# widged at "checkedButtonId"'s row.
-		return gridLayout.itemAtPosition (checkedButtonId, column).widget()
+		return self.gridLayout.itemAtPosition (checkedButtonId, column).widget()
 
-	def deleteRow (self, gridLayout, rowNum):
+	def deleteRow (self, rowNum):
 		rowCount = self.getRowCount()
 		
 		# What we'll actually do, is leave the radio buttons in tact, but 
 		# delete all the other widgets in the row.  Then we'll move everything
 		# else up, and finally delete the last radio button.
 
-		for i in range (gridLayout.columnCount()):
+		for i in range (self.gridLayout.columnCount()):
 			# Skip the radio button's column.
 			if i == self.radioCol:
 				continue
 
-			widgetItem = gridLayout.itemAtPosition (rowNum, i)
+			widgetItem = self.gridLayout.itemAtPosition (rowNum, i)
 
 			# Delete the widget.
 			self.deleteWidgetItem (widgetItem)
 
 		# Next, move everything up row by row.  +1 is to offset from the row we just deleted.
 		for i in range (rowNum + 1, rowCount + 1):
-			for j in range (gridLayout.columnCount()):
+			for j in range (self.gridLayout.columnCount()):
 				if j == self.radioCol:
 					continue
 
-				widgetItem = gridLayout.itemAtPosition (i, j)
+				widgetItem = self.gridLayout.itemAtPosition (i, j)
 
 				#if widgetItem == None:
 					#continue
 
 				#gridLayout.addWidget (widgetItem.widget(), i - 1, j)
-				self.addWidgetItem (gridLayout, widgetItem, i - 1, j)
+				self.addWidgetItem (self.gridLayout, widgetItem, i - 1, j)
 
 		# We'll also need to remove the radio button's reference from "radioGroup".
-		lastRadioButon = gridLayout.itemAtPosition (rowCount, self.radioCol)
+		lastRadioButon = self.gridLayout.itemAtPosition (rowCount, self.radioCol)
 		self.radioGroup.removeButton (lastRadioButon.widget())
 
 		# Finally, delete the last row.
-		for i in range (gridLayout.columnCount()):
-			widgetItem = gridLayout.itemAtPosition (rowCount, i)
+		for i in range (self.gridLayout.columnCount()):
+			widgetItem = self.gridLayout.itemAtPosition (rowCount, i)
 
 			# Delete the widget.
 			self.deleteWidgetItem (widgetItem)
 		
-		gridLayout.invalidate()
+		self.gridLayout.invalidate()
 
-	def swapRows (self, gridLayout, row1, row2):
+	def swapRows (self, row1, row2):
 		row1Widgets = {}
 
-		for i in range (gridLayout.columnCount()):
-			widgetItem1 = gridLayout.itemAtPosition (row1, i)
-			widgetItem2 = gridLayout.itemAtPosition (row2, i)
+		for i in range (self.gridLayout.columnCount()):
+			widgetItem1 = self.gridLayout.itemAtPosition (row1, i)
+			widgetItem2 = self.gridLayout.itemAtPosition (row2, i)
 
 			if widgetItem1 == None:
 				continue
@@ -133,8 +134,8 @@ class radioManagement ():
 
 				continue
 
-			self.addWidgetItem (gridLayout, widgetItem2, row1, i)
-			self.addWidgetItem (gridLayout, widgetItem1, row2, i)
+			self.addWidgetItem (widgetItem2, row1, i)
+			self.addWidgetItem (widgetItem1, row2, i)
 
 	def deleteWidgetItem (self, widgetItem):
 		# If the item is actually empty.
@@ -165,7 +166,7 @@ class radioManagement ():
 		# Finally, delete the empty layout.
 		layout.setParent (None)
 
-	def addWidgetItem (self, gridLayout, widgetItem, posX, posY):
+	def addWidgetItem (self, widgetItem, posX, posY):
 		if widgetItem == None:
 			return
 
@@ -173,7 +174,7 @@ class radioManagement ():
 
 		if widget != None:
 			# Looks like we're processing a widget.
-			gridLayout.addWidget (widget, posX, posY)
+			self.gridLayout.addWidget (widget, posX, posY)
 			return
 
 		# We otherwise assume it's a layout.
@@ -183,7 +184,7 @@ class radioManagement ():
 		# I guess I /could/ go and fix it in the source...
 		layout.setParent (None)
 
-		gridLayout.addLayout (layout, posX, posY)
+		self.gridLayout.addLayout (layout, posX, posY)
 
 	def getRowCount (self):
 		# Unfortunately, gridLayout.rowCount() is unreliable for getting the number
@@ -203,3 +204,35 @@ class radioManagement ():
 	
 	def moveDownButtonClicked (self):
 		pass
+
+	def moveUpButtonClicked (self):
+		# We are moving up, so we'll swap with the row above us.
+
+		checkedButtonId = self.radioGroup.checkedId()
+
+		if checkedButtonId == -1:
+			print "No item selected!"
+			return
+
+		previousButtonRow = checkedButtonId - 1
+
+		if previousButtonRow <= 0:
+			print "Row already at highest position!"
+			return
+
+		self.swapRows (checkedButtonId, previousButtonRow)
+
+	def moveDownButtonClicked (self):
+		checkedButtonId = self.radioGroup.checkedId()
+
+		if checkedButtonId == -1:
+			print "No item selected!"
+			return
+
+		nextButtonRow = checkedButtonId + 1
+
+		if nextButtonRow > len (self.radioGroup.buttons()):
+			print "Row already at lowest position!"
+			return
+
+		self.swapRows (checkedButtonId, nextButtonRow)

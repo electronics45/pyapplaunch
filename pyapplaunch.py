@@ -9,6 +9,7 @@ import re
 from functools import partial
 
 from DbusInterface import DbusInterface
+from ExecutionDelegate import *
 from radioManagement import radioManagement
 from Tree import Tree
 from ApplicationLauncher import ApplicationLauncher
@@ -25,8 +26,6 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.upDirShortCutKey = "/"
 		self.launchProgram = "/opt/trinity/bin/konsole -e"
 
-		radioManagement.__init__ (self, self.radioCol)
-
 		self.pylaunchDir = os.path.dirname (os.path.abspath(__file__))
 		self.scriptDatabasePath = self.pylaunchDir + os.sep + "scripts.xml"
 
@@ -40,9 +39,10 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		
 		self.setAttribute(Qt.WA_DeleteOnClose)
 
+		execbox = EditExecDelegateDialog()
+		execbox.exec_()
+
 	def closeEvent (self, event):
-		# Make sure all windows are closed when main window closes.
-		#sys.exit()
 		self.hide()
 		event.ignore()
 
@@ -93,6 +93,8 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.buttonLayout = QtGui.QGridLayout()
 		vbox.addLayout (self.buttonLayout)
 		self.buttonLayout.setColumnStretch (self.btnCol, 1) # Btn column stretches most.
+
+		radioManagement.__init__ (self, self.radioCol, self.buttonLayout)
 
 		# A horizontal rule.
 		line = QtGui.QFrame (self)
@@ -173,10 +175,10 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 			button.setShortcut (QtGui.QKeySequence (self.upDirShortCutKey))
 
 	def clearAppButtons (self):
-		self.clearGridLayout (self.buttonLayout)
+		self.clearGridLayout()
 
 	def getActiveAppName (self):
-		button = self.getWidgetAtCheckedRow (self.buttonLayout, self.btnCol)
+		button = self.getWidgetAtCheckedRow (self.btnCol)
 
 		if button == None:
 			return None
@@ -365,7 +367,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 		self.swapSlots (activeApp, nextApp)
 
-		self.swapRows (self.buttonLayout, checkedRow, swapRow)
+		self.swapRows (checkedRow, swapRow)
 
 		# Commit changes to disk.
 		self.tree.writeTreeToDisk (self.scriptDatabasePath)
@@ -435,9 +437,7 @@ class NewApplication (QtGui.QDialog, radioManagement):
 		self.gridLabelCol = 1
 		self.paramReqCol = 2
 
-		radioManagement.__init__ (self, self.radioCol)
-		
-		self.setAttribute(Qt.WA_DeleteOnClose)
+		#self.setAttribute(Qt.WA_DeleteOnClose)
 
 		self.initUI()
 
@@ -498,6 +498,8 @@ class NewApplication (QtGui.QDialog, radioManagement):
 
 		# grid column stretches most
 		self.paramLayout.setColumnStretch (1, 1)
+
+		radioManagement.__init__ (self, self.radioCol, self.paramLayout)
 
 		self.initDelAndMovButtons (vbox)
 
@@ -703,38 +705,6 @@ class NewApplication (QtGui.QDialog, radioManagement):
 			return
 
 		self.deleteRow (self.paramLayout, checkedButtonId)
-	
-	def moveUpButtonClicked (self):
-		# We are moving up, so we'll swap with the row above us.
-
-		checkedButtonId = self.radioGroup.checkedId()
-
-		if checkedButtonId == -1:
-			print "No item selected!"
-			return
-
-		previousButtonRow = checkedButtonId - 1
-
-		if previousButtonRow <= 0:
-			print "Row already at highest position!"
-			return
-
-		self.swapRows (self.paramLayout, checkedButtonId, previousButtonRow)
-	
-	def moveDownButtonClicked (self):
-		checkedButtonId = self.radioGroup.checkedId()
-
-		if checkedButtonId == -1:
-			print "No item selected!"
-			return
-
-		nextButtonRow = checkedButtonId + 1
-
-		if nextButtonRow > len (self.radioGroup.buttons()):
-			print "Row already at lowest position!"
-			return
-
-		self.swapRows (self.paramLayout, checkedButtonId, nextButtonRow)
 
 if __name__ == '__main__':
 	# Re-enable "Ctrl+C" terminal interuption.
