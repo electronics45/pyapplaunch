@@ -14,8 +14,6 @@ from radioManagement import radioManagement
 from Tree import Tree
 from ApplicationLauncher import ApplicationLauncher
 
-#from dbus.mainloop.qt import DBusQtMainLoop
-
 class MainWindow (QtGui.QMainWindow, radioManagement):
 	def __init__ (self):
 		QtGui.QMainWindow.__init__ (self)
@@ -37,10 +35,9 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 		self.create_sys_tray()
 		
-		self.setAttribute(Qt.WA_DeleteOnClose)
+		#self.setAttribute(Qt.WA_DeleteOnClose)
 
-		execbox = EditExecDelegateDialog()
-		execbox.exec_()
+		self.executionManager = ExecutionDelegateManager()
 
 	def closeEvent (self, event):
 		self.hide()
@@ -251,7 +248,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		return details, True
 
 	def editAppDetails (self, defaultDetails):
-		newApp = NewApplication (defaultDetails)
+		newApp = NewApplication (defaultDetails, self.executionManager)
 
 		#self.destroyed.connect (newApp.close)
 		#self.destroyed.connect (newApp.destroy)
@@ -337,7 +334,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.tree.deleteApp (activeAppName)
 
 		#self.buildAppButtons()
-		self.deleteRow (self.buttonLayout, self.radioGroup.checkedId())
+		self.deleteRow (self.radioGroup.checkedId())
 
 		# Commit changes to disk.
 		self.tree.writeTreeToDisk (self.scriptDatabasePath)
@@ -428,8 +425,10 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.tree.updateApp (appDetails2)
 
 class NewApplication (QtGui.QDialog, radioManagement):
-	def __init__ (self, appDefaultDetails):
+	def __init__ (self, appDefaultDetails, execManager):
 		super (NewApplication, self).__init__()
+
+		self.execManager = execManager
 
 		self.radioCol = 0
 		self.gridGridCol = 1
@@ -477,6 +476,22 @@ class NewApplication (QtGui.QDialog, radioManagement):
 		self.cmdBtn.setMaximumWidth (moreFilesWidth + 15)
 		grid.addWidget (self.cmdBtn, 1, 2)
 		self.cmdBtn.clicked.connect (self.cmdBtnClicked)
+
+		# Execution delegate
+		label = QtGui.QLabel ("Using", self)
+		grid.addWidget (label, 2, 0)
+
+		execBox = QtGui.QHBoxLayout()
+		grid.addLayout (execBox, 2, 1)
+
+		self.execDelegate = QtGui.QComboBox (self)
+		#grid.addWidget (self.execDelegate, 2, 1)
+		execBox.addWidget (self.execDelegate)
+		execBox.setStretch (0, 1) # combo box get largest share of space.
+
+		self.execEditBtn = QtGui.QPushButton ("configure", self)
+		self.execEditBtn.clicked.connect (self.execEditBtnClicked)
+		execBox.addWidget (self.execEditBtn)
 
 		# A horizontal rule.
 		line = QtGui.QFrame (self)
@@ -694,17 +709,20 @@ class NewApplication (QtGui.QDialog, radioManagement):
 
 		return self.appDetails
 
+	def execEditBtnClicked (self):
+		self.execManager.editDelegates()
+
 	def newParamBtnClicked (self):
 		self.addParameter()
 
-	def deleteButtonClicked (self):
-		checkedButtonId = self.radioGroup.checkedId()
+	#def deleteButtonClicked (self):
+		#checkedButtonId = self.radioGroup.checkedId()
 
-		if checkedButtonId == -1:
-			print "No item selected!"
-			return
+		#if checkedButtonId == -1:
+			#print "No item selected!"
+			#return
 
-		self.deleteRow (self.paramLayout, checkedButtonId)
+		#self.deleteRow (self.paramLayout, checkedButtonId)
 
 if __name__ == '__main__':
 	# Re-enable "Ctrl+C" terminal interuption.

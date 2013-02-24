@@ -199,11 +199,11 @@ class radioManagement ():
 	def deleteButtonClicked (self):
 		pass
 	
-	def moveUpButtonClicked (self):
-		pass
+	#def moveUpButtonClicked (self):
+		#pass
 	
-	def moveDownButtonClicked (self):
-		pass
+	#def moveDownButtonClicked (self):
+		#pass
 
 	def moveUpButtonClicked (self):
 		# We are moving up, so we'll swap with the row above us.
@@ -236,3 +236,12 @@ class radioManagement ():
 			return
 
 		self.swapRows (checkedButtonId, nextButtonRow)
+
+	def deleteButtonClicked (self):
+		checkedButtonId = self.radioGroup.checkedId()
+
+		if checkedButtonId == -1:
+			print "No item selected!"
+			return
+
+		self.deleteRow (checkedButtonId)

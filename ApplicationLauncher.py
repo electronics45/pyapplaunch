@@ -171,7 +171,7 @@ class ExecDialog (QtGui.QDialog):
 
 			self.parameters.append (item.widget().text())
 
-		print self.parameters
+		#print self.parameters
 
 	def areParamsOk (self):
 		for i, param in enumerate (self.appDetails ["params"]):
