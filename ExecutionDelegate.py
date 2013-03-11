@@ -7,10 +7,18 @@ from collections import OrderedDict
 
 from radioManagement import radioManagement
 
-class ExecutionDelegateManager ():
-	def __init__ (self):
+class ExecutionDelegateManager (QtGui.QWidget):
+	delegateNameChanged = pyqtSignal (str, str)
+
+	def __init__ (self, parent = None):
+		QtGui.QWidget.__init__(self, parent)
+
 		self.pylaunchDir = os.path.dirname (os.path.abspath(__file__))
 		self.defaultDelegateListPath = os.path.join (self.pylaunchDir, "exec_delegates.config")
+
+		# A signal to noftify of when an execution delegate's name has been
+		# changed.
+		#self.delegateNameChanged = pyqtSignal (unicode, unicode)
 
 		self.loadDelegateList (self.defaultDelegateListPath)
 
@@ -32,6 +40,8 @@ class ExecutionDelegateManager ():
 	def editDelegates (self):
 		dialog = EditExecDelegateDialog (self.delegates)
 
+		dialog.delegateNameChanged.connect (self.delegateNameChanged.emit)
+
 		if not dialog.exec_():
 			return False
 
@@ -42,9 +52,18 @@ class ExecutionDelegateManager ():
 
 		return True
 
+	def getDelegates (self):
+		return self.delegates
+
 class EditExecDelegateDialog (QtGui.QDialog, radioManagement):
+	delegateNameChanged = pyqtSignal (str, str)
+
 	def __init__ (self, defaultDelegates = {}):
 		super (EditExecDelegateDialog, self).__init__()
+
+		# A signal to noftify of when an execution delegate's name has been
+		# changed.
+		#self.delegateNameChanged = pyqtSignal (unicode, unicode)
 
 		self.radioCol = 0
 		self.gridGridCol = 1
@@ -58,6 +77,9 @@ class EditExecDelegateDialog (QtGui.QDialog, radioManagement):
 		# Load all default delegates
 		for delegateName in defaultDelegates.keys():
 			self.addExecDelegate (delegateName, defaultDelegates [delegateName])
+
+		# We'll need to save the defaults for later comparision.
+		self.defaultDelegates = defaultDelegates
 	
 	def initUI (self):
 		vbox = QtGui.QVBoxLayout()
@@ -111,6 +133,11 @@ class EditExecDelegateDialog (QtGui.QDialog, radioManagement):
 		if defaultName:
 			#self.setDefaultValue (textBox, defaultValues, defaultName)
 			textBox.setText (defaultName)
+			# This is a hack which I'm using to assign arbitrary text to the
+			# widget, since there does not seem to be any way to associate user
+			# data with a widget.  If anyone has less ugly way to do this,
+			# (including restructuring the code) please let me know.
+			textBox.setAccessibleName (defaultName)
 
 		## use sudo checkbox
 		#paramRequired = QtGui.QCheckBox ("Sudo?", self)
@@ -129,9 +156,11 @@ class EditExecDelegateDialog (QtGui.QDialog, radioManagement):
 
 	def storeParameters (self):
 		delegates = OrderedDict ({})
+		changedNames = {}
 
 		# Iterate over every entry.
 		for entryNum in self.getRowRange():
+		#for index, defaultItem in enumerate (self.)
 			
 			layoutItem = self.gridLayout.itemAtPosition (entryNum, 1)
 
@@ -147,44 +176,51 @@ class EditExecDelegateDialog (QtGui.QDialog, radioManagement):
 			cmd = str (layout.itemAtPosition (1,
 				self.grdTxtCol).widget().text())
 
-			# If an execution delegate with this name already exists.
-			if name in delegates:
-				self.warnNameError (name)
+			# This is a hack which I'm using to assign arbitrary text to the
+			# widget, since there does not seem to be any way to associate user
+			# data with a widget.  If anyone has less ugly way to do this,
+			# (including restructuring the code) please let me know.
+			previousName = str (layout.itemAtPosition (0,
+				self.grdTxtCol).widget().accessibleName ())
+
+			if len (name) == 0:
+				self.warn ("Entry '" + str (entryNum) + "' does not have name!")
 				return False, delegates
 
-			delegates [name] = cmd
-			print delegates
+			# If an execution delegate with this name already exists.
+			if name in delegates:
+				#self.warnNameError (name)
+				self.warn ("Entry '" + str (entryNum) + "' has a duplicate name!")
+				return False, delegates
 
-		print delegates
+			if len (previousName) != 0 and previousName != name:
+				#print "Hark! yon name hast changed!"
+				#self.delegateNameChanged.emit (previousName, name)
+				# Keep track of these name changes for later.
+				changedNames [previousName] = name
+
+			delegates [name] = cmd
+
+#		print delegates
 
 		self.delegates = delegates.copy()
+
+		# All parameters have now been verified and saved.  It's safe to
+		# notify about all names which have changed.
+		for oldName in changedNames.keys():
+			self.delegateNameChanged.emit (oldName, changedNames [oldName])
 
 		return True, delegates
 
 	def areParamsOk (self):
 		pass
 
-	#def setDefaultValue (self, widget, defaultValues, key):
-		#if not key in defaultValues:
-			#return
-
-		## Are we processing a checkbox?
-		#if type (widget) == QtGui.QLineEdit:
-			#widget.setText (defaultValues [key])
-		#elif type (widget) == QtGui.QCheckBox:
-			#value = defaultValues [key]
-			## The parameter type could be either bool-
-			#if type (value) == bool:
-				#widget.setChecked (value)
-			#else:
-				## -Or a string containing "True" or "False".
-				#if (value == "True"):
-					#widget.setChecked (True)
-				#else:
-					#widget.setChecked (False)
-
 	def getDelegates (self):
 		return self.delegates
+
+	#@QtCore.pyqtSlot (int, QtGui.QWidget)
+	#def someSlot(status, source):
+		#pass
 
 	def newDelegateButtonClicked (self):
 		self.addExecDelegate()

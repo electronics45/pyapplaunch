@@ -204,6 +204,24 @@ class Tree ():
 
 		return params
 
+	def substituteEveryOccurrenceOfValue (self, oldValue, newValue, key, startNode = None):
+		if startNode == None:
+			startNode = self.root
+
+		# Iterate over the child nodes.
+		for node in startNode:
+			keyNode = node.find (key)
+
+			# If we find the key as a child, and it's value matches the old value.
+			if keyNode != None and keyNode.text == oldValue:
+				keyNode.text = str (newValue)
+
+			childrenNode = node.find ("children")
+			if childrenNode != None:
+				# This is also a group node, so we'll process it's children.
+				self.substituteEveryOccurrenceOfValue (oldValue, newValue,
+					key, childrenNode)
+
 	def changeContextToGroup (self, groupName):
 		self.contextTrail.append (self.currentContext)
 
