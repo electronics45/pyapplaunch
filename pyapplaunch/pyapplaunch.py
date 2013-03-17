@@ -25,7 +25,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.launchProgram = "/opt/trinity/bin/konsole -e"
 
 		self.pylaunchDir = os.path.dirname (os.path.abspath(__file__))
-		self.scriptDatabasePath = self.pylaunchDir + os.sep + "scripts.xml"
+		self.scriptDatabasePath = self.pylaunchDir + os.sep + "config" + os.sep + "scripts.xml"
 
 		self.tree = Tree (self.scriptDatabasePath)
 
@@ -70,7 +70,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 	def initUI (self):
 		# Set the icon for the window.
-		self.setWindowIcon (QtGui.QIcon ('icon.png'))
+		self.setWindowIcon (QtGui.QIcon (os.path.join (self.pylaunchDir, "images/pyapplaunch.png")))
 
 		QtGui.QShortcut (QtGui.QKeySequence ("Esc"), self, self.hide)
 		QtGui.QShortcut (QtGui.QKeySequence ("Ctrl+Q"), self, sys.exit)
@@ -431,7 +431,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.tree.updateApp (appDetails1)
 		self.tree.updateApp (appDetails2)
 
-if __name__ == '__main__':
+def main():
 	# Re-enable "Ctrl+C" terminal interuption.
 	signal.signal (signal.SIGINT, signal.SIG_DFL)
 
@@ -443,3 +443,6 @@ if __name__ == '__main__':
 	dbusInterface = DbusInterface (main)
 	
 	sys.exit (app.exec_())
+
+if __name__ == '__main__':
+	main()

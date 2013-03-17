@@ -14,7 +14,7 @@ class ExecutionDelegateManager (QtGui.QWidget):
 		QtGui.QWidget.__init__(self, parent)
 
 		self.pylaunchDir = os.path.dirname (os.path.abspath(__file__))
-		self.defaultDelegateListPath = os.path.join (self.pylaunchDir, "exec_delegates.config")
+		self.defaultDelegateListPath = os.path.join (self.pylaunchDir,"config", "exec_delegates.config")
 
 		# A signal to noftify of when an execution delegate's name has been
 		# changed.
