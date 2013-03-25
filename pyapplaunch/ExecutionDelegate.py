@@ -5,6 +5,7 @@ import os.path
 import pickle
 from collections import OrderedDict
 
+import ConfigManager
 from radioManagement import radioManagement
 
 class ExecutionDelegateManager (QtGui.QWidget):
@@ -13,8 +14,10 @@ class ExecutionDelegateManager (QtGui.QWidget):
 	def __init__ (self, parent = None):
 		QtGui.QWidget.__init__(self, parent)
 
-		self.pylaunchDir = os.path.dirname (os.path.abspath(__file__))
-		self.defaultDelegateListPath = os.path.join (self.pylaunchDir,"config", "exec_delegates.config")
+		#self.pylaunchDir = os.path.dirname (os.path.abspath(__file__))
+		self.pyapplaunchConfigDir = ConfigManager.getPyapplaunchConfigDir()
+		
+		self.defaultDelegateListPath = os.path.join (self.pyapplaunchConfigDir, "exec_delegates.config")
 
 		# A signal to noftify of when an execution delegate's name has been
 		# changed.
@@ -32,6 +35,11 @@ class ExecutionDelegateManager (QtGui.QWidget):
 		else:
 			# File does not exist.  We'll use an empty dictionary instead.
 			self.delegates = {}
+
+			## We'll also create the file for later use.
+			#f = open (listPath, 'w')
+			#f.write ("test")
+			#f.close()
 
 	def saveDelegateList (self, listPath):
 		with open (listPath, 'w') as fileHandle:

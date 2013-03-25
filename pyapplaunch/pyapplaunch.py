@@ -6,8 +6,10 @@ import signal
 import sys
 import os
 from functools import partial
+#import appdirs
 
 from ApplicationLauncher import ApplicationLauncher
+import ConfigManager
 from DbusInterface import DbusInterface
 from ExecutionDelegate import *
 from NewApplication import *
@@ -24,8 +26,18 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.upDirShortCutKey = "/"
 		self.launchProgram = "/opt/trinity/bin/konsole -e"
 
-		self.pylaunchDir = os.path.dirname (os.path.abspath(__file__))
-		self.scriptDatabasePath = self.pylaunchDir + os.sep + "config" + os.sep + "scripts.xml"
+		#appdirs = AppDirs ("pyapplaunch")
+		#self.pyapplaunchConfigDir = appdirs.user_data_dir ("pyapplaunch")
+		#print self.pyapplaunchConfigDir
+
+		## If the directory does not exist, then create it.
+		#if not os.path.exists (self.pyapplaunchConfigDir):
+			#os.makedirs (self.pyapplaunchConfigDir)
+
+		self.pyapplaunchConfigDir = ConfigManager.getPyapplaunchConfigDir()
+
+		#self.pylaunchDir = os.path.dirname (os.path.abspath(__file__))
+		self.scriptDatabasePath = self.pyapplaunchConfigDir + os.sep + "scripts.xml"
 
 		self.tree = Tree (self.scriptDatabasePath)
 
@@ -70,7 +82,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 	def initUI (self):
 		# Set the icon for the window.
-		self.setWindowIcon (QtGui.QIcon (os.path.join (self.pylaunchDir, "images/pyapplaunch.png")))
+		self.setWindowIcon (QtGui.QIcon (os.path.join (self.pyapplaunchConfigDir, "images/pyapplaunch.png")))
 
 		QtGui.QShortcut (QtGui.QKeySequence ("Esc"), self, self.hide)
 		QtGui.QShortcut (QtGui.QKeySequence ("Ctrl+Q"), self, sys.exit)

@@ -1,1 +1,6 @@
- 
+
+--- Installation ---
+Pyapplaunch Requires the following packages install to work:
+- PyQt
+- appdirs (pypi.python.org/pypi/appdirs/1.2.0)
+

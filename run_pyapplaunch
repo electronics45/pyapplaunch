@@ -1,7 +1,0 @@
-#!/usr/bin/python
-
-from pyapplaunch import pyapplaunch
-
-pyapplaunch.main() 
-#pyapplaunch.MainWindow().show()
-
