@@ -1,2 +1,0 @@
-include run_pyapplaunch README
-recursive-include pyapplaunch/images *

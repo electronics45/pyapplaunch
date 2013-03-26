@@ -6,7 +6,6 @@ import signal
 import sys
 import os
 from functools import partial
-#import appdirs
 
 from ApplicationLauncher import ApplicationLauncher
 import ConfigManager
@@ -82,7 +81,8 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 	def initUI (self):
 		# Set the icon for the window.
-		self.setWindowIcon (QtGui.QIcon (os.path.join (self.pyapplaunchConfigDir, "images/pyapplaunch.png")))
+		imageDir = ConfigManager.getPyapplaunchImageDir()
+		self.setWindowIcon (QtGui.QIcon (os.path.join (imageDir, "pyapplaunch.png")))
 
 		QtGui.QShortcut (QtGui.QKeySequence ("Esc"), self, self.hide)
 		QtGui.QShortcut (QtGui.QKeySequence ("Ctrl+Q"), self, sys.exit)
