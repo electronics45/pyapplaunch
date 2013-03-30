@@ -8,7 +8,7 @@ import os
 from functools import partial
 
 from ApplicationLauncher import ApplicationLauncher
-import ConfigManager
+from ConfigManager import ConfigManager
 from DbusInterface import DbusInterface
 from ExecutionDelegate import *
 from NewApplication import *
@@ -35,18 +35,19 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 		self.pyapplaunchConfigDir = ConfigManager.getPyapplaunchConfigDir()
 
+		self.configManager = ConfigManager.ConfigManager()
+		self.executionManager = ExecutionDelegateManager (self.configManager)
+
+		#self.pyapplaunchConfigDir = self.configManager.getConfigDir()
+
 		#self.pylaunchDir = os.path.dirname (os.path.abspath(__file__))
 		self.scriptDatabasePath = self.pyapplaunchConfigDir + os.sep + "scripts.xml"
 
 		self.tree = Tree (self.scriptDatabasePath)
 
 		self.initUI()
-
 		self.buildAppButtons()
-
 		self.create_sys_tray()
-
-		self.executionManager = ExecutionDelegateManager()
 
 		# This is an adaptor to call "self.tree.substituteEveryOccurrenceOfValue"
 		# with the right parameters, since the signal we're connecting to can't

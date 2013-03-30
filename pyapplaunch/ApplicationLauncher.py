@@ -169,7 +169,7 @@ class ExecDialog (QtGui.QDialog):
 			if item == None:
 				continue
 
-			self.parameters.append (item.widget().text())
+			self.parameters.append (str (item.widget().text()))
 
 		#print self.parameters
 

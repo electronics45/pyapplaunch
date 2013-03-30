@@ -11,39 +11,46 @@ from radioManagement import radioManagement
 class ExecutionDelegateManager (QtGui.QWidget):
 	delegateNameChanged = pyqtSignal (str, str)
 
-	def __init__ (self, parent = None):
-		QtGui.QWidget.__init__(self, parent)
+	def __init__ (self, configManager):
+		QtGui.QWidget.__init__(self, None)
+
+		self.configManager = configManager
 
 		#self.pylaunchDir = os.path.dirname (os.path.abspath(__file__))
-		self.pyapplaunchConfigDir = ConfigManager.getPyapplaunchConfigDir()
+		#self.pyapplaunchConfigDir = ConfigManager.getPyapplaunchConfigDir()
 		
-		self.defaultDelegateListPath = os.path.join (self.pyapplaunchConfigDir, "exec_delegates.config")
+		#self.defaultDelegateListPath = os.path.join (self.pyapplaunchConfigDir, "exec_delegates.config")
 
 		# A signal to noftify of when an execution delegate's name has been
 		# changed.
 		#self.delegateNameChanged = pyqtSignal (unicode, unicode)
 
-		self.loadDelegateList (self.defaultDelegateListPath)
+		self.loadDelegateList ()
 
-	def loadDelegateList (self, listPath):
+	def loadDelegateList (self):
 		
-		if os.path.exists (listPath):
-			with open (listPath, 'r') as fileHandle:
-				#data = fileHandle.read()
-				#self.delegates = ast.literal_eval (data)
-				self.delegates = pickle.loads (fileHandle.read())
-		else:
-			# File does not exist.  We'll use an empty dictionary instead.
-			self.delegates = {}
+		#if os.path.exists (listPath):
+			#with open (listPath, 'r') as fileHandle:
+				##data = fileHandle.read()
+				##self.delegates = ast.literal_eval (data)
+				#self.delegates = pickle.loads (fileHandle.read())
+		#else:
+			## File does not exist.  We'll use an empty dictionary instead.
+			#self.delegates = {}
 
-			## We'll also create the file for later use.
-			#f = open (listPath, 'w')
-			#f.write ("test")
-			#f.close()
+			### We'll also create the file for later use.
+			##f = open (listPath, 'w')
+			##f.write ("test")
+			##f.close()
 
-	def saveDelegateList (self, listPath):
-		with open (listPath, 'w') as fileHandle:
-			 pickle.dump (self.delegates, fileHandle)
+		self.delegates = self.configManager.getConfigSection ("execDelegates")
+
+	def saveDelegateList (self):
+		#with open (listPath, 'w') as fileHandle:
+			 #pickle.dump (self.delegates, fileHandle)
+
+		self.configManager.setSection ("execDelegates", self.delegates)
+		self.configManager.writeConfigFile()
 
 	def editDelegates (self):
 		dialog = EditExecDelegateDialog (self.delegates)
@@ -56,7 +63,7 @@ class ExecutionDelegateManager (QtGui.QWidget):
 		# Retrieve and store
 		self.delegates = dialog.getDelegates()
 
-		self.saveDelegateList(self.defaultDelegateListPath)
+		self.saveDelegateList ()
 
 		return True
 

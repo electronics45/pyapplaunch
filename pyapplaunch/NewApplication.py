@@ -295,7 +295,7 @@ class NewApplication (QtGui.QDialog, radioManagement):
 
 		# We don't use this dialog for creating groups.
 		self.appDetails ["is_group"] = "False"
-		self.appDetails ["exec_with"] = self.execDelegate.currentText()
+		self.appDetails ["exec_with"] = str (self.execDelegate.currentText())
 
 		self.appDetails ["params"] = self.returnParams()
 
