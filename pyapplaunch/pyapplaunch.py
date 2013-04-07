@@ -47,7 +47,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 
 		self.initUI()
 		self.buildAppButtons()
-		self.create_sys_tray()
+		self.createSysTray()
 		self.restoreWindowPos()
 
 		# This is an adaptor to call "self.tree.substituteEveryOccurrenceOfValue"
@@ -98,18 +98,18 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.hide()
 		self.saveWindowPos()
 
-	def create_sys_tray (self):
+	def createSysTray (self):
 		self.sysTray = QtGui.QSystemTrayIcon (self)
 		self.sysTray.setIcon (self.windowIcon())
 		self.sysTray.setVisible (True)
-		self.connect (self.sysTray, SIGNAL ("activated (QSystemTrayIcon::ActivationReason)"), self.on_sys_tray_activated)
+		self.connect (self.sysTray, SIGNAL ("activated (QSystemTrayIcon::ActivationReason)"), self.onSysTrayActivated)
 
 		menu = QtGui.QMenu (self)
 		exitAction = menu.addAction (self.exitAction)
 
 		self.sysTray.setContextMenu (menu)
 
-	def on_sys_tray_activated (self, reason):
+	def onSysTrayActivated (self, reason):
 		#print "reason: " + str (reason)
 		
 		if reason == 3:
