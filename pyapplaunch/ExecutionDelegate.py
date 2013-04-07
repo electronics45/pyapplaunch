@@ -20,6 +20,10 @@ class ExecutionDelegateManager (QtGui.QWidget):
 	def loadDelegateList (self):
 		self.delegates = self.configManager.getConfigSection ("execDelegates")
 
+		# If the list is empty, add "bash" so that it is not empty.
+		if len (self.delegates) == 0:
+			self.delegates = {"bash":"bash"}
+
 	def saveDelegateList (self):
 
 		self.configManager.setSection ("execDelegates", self.delegates)
@@ -35,6 +39,8 @@ class ExecutionDelegateManager (QtGui.QWidget):
 
 		# Retrieve and store
 		self.delegates = dialog.getDelegates()
+
+		print self.delegates
 
 		self.saveDelegateList ()
 
