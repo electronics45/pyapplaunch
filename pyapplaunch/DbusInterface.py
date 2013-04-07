@@ -18,10 +18,10 @@ class DbusInterface (dbus.service.Object):
 	
 	
 	@dbus.service.method (G_BUS_NAME)#, in_signature = 'dd', out_signature = 'd')
-	def show (self): self.mainWindow.show()
+	def show (self): self.mainWindow.showWindow()
 	
 	@dbus.service.method (G_BUS_NAME)#, in_signature = 'dd', out_signature = 'd')
-	def hide (self): self.mainWindow.hide()
+	def hide (self): self.mainWindow.hideWindow()
 	
 	#@dbus.service.method (G_BUS_NAME, in_signature = 'dd', out_signature = 'd')
 	#def add(self, a, b): return a+b

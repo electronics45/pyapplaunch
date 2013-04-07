@@ -48,6 +48,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.initUI()
 		self.buildAppButtons()
 		self.create_sys_tray()
+		self.restoreWindowPos()
 
 		# This is an adaptor to call "self.tree.substituteEveryOccurrenceOfValue"
 		# with the right parameters, since the signal we're connecting to can't
@@ -56,9 +57,46 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 			self.tree.substituteEveryOccurrenceOfValue (s1, s2, "exec_with")
 		self.executionManager.delegateNameChanged.connect (nameChangeAdaptor)
 
+		#pos = self.mapToGlobal (self.pos())
+		#print str (pos.x()) + str (pos.y())
+
 	def closeEvent (self, event):
-		self.hide()
+		#self.hide()
+
+		## The window is now hidden, so we can afford the delay to
+		## Commit the window position to disk.
+		#self.saveWindowPos()
+		self.hideWindow()
 		event.ignore()
+
+	def quit (self):
+		self.saveWindowPos()
+		QtGui.qApp.quit()
+
+	def saveWindowPos (self):
+		# Save position of window.
+		pos = self.pos()
+		self.configManager.setItemInSection ("window_settings", "pos_x", str (pos.x()))
+		self.configManager.setItemInSection ("window_settings", "pos_y", str (pos.y()))
+		self.configManager.writeConfigFile()
+
+	def restoreWindowPos (self):
+		posX = self.configManager.getItemInSectionInt ("window_settings", "pos_x")
+		posY = self.configManager.getItemInSectionInt ("window_settings", "pos_y")
+
+		if posX == None or posY == None:
+			# Failed to get one of the settings, so we won't move the window.
+			return
+
+		self.move (posX, posY)
+
+	def showWindow (self):
+		self.show()
+		self.restoreWindowPos()
+
+	def hideWindow (self):
+		self.hide()
+		self.saveWindowPos()
 
 	def create_sys_tray (self):
 		self.sysTray = QtGui.QSystemTrayIcon (self)
@@ -72,13 +110,17 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.sysTray.setContextMenu (menu)
 
 	def on_sys_tray_activated (self, reason):
-		print "reason: " + str (reason)
+		#print "reason: " + str (reason)
 		
 		if reason == 3:
 			if self.isHidden() == False:
-				self.hide()
+				#self.hide()
+				## The window is now hidden, so we can afford the delay to
+				## Commit the window position to disk.
+				#self.saveWindowPos()
+				self.hideWindow()
 			else:
-				self.show()
+				self.showWindow()
 
 	def initUI (self):
 		# Set the icon for the window.
@@ -86,13 +128,13 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		self.setWindowIcon (QtGui.QIcon (os.path.join (imageDir, "pyapplaunch.png")))
 
 		QtGui.QShortcut (QtGui.QKeySequence ("Esc"), self, self.hide)
-		QtGui.QShortcut (QtGui.QKeySequence ("Ctrl+Q"), self, sys.exit)
+		QtGui.QShortcut (QtGui.QKeySequence ("Ctrl+Q"), self, self.quit)
 
 		# Exit action for menus.
 		self.exitAction = QtGui.QAction(QtGui.QIcon ('exit.png'), '&Exit', self)
 		self.exitAction.setShortcut ('Ctrl+Q')
 		self.exitAction.setStatusTip ('Exit application')
-		self.exitAction.triggered.connect (QtGui.qApp.quit)
+		self.exitAction.triggered.connect (self.quit)
 
 		#menubar = self.menuBar()
 		#fileMenu = menubar.addMenu ('&File')
