@@ -15,9 +15,7 @@ class Tree ():
 		except:
 			print "could not read tree '" + treePath + "'; building default."
 			pass
-		#except:
-			#raise
-
+		
 		if self.root == None:
 			self.buildDefaultTree()
 

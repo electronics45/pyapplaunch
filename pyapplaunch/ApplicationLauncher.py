@@ -8,13 +8,9 @@ from PyQt4 import QtGui
 
 class ApplicationLauncher ():
 	def __init__ (self, applicationDetails, launchProg):
-		#super (ApplicationLauncher, self).__init__()
-
 		self.appDetails = applicationDetails
 		self.launchProg = launchProg
 		self.cmdString = self.appDetails ["command"]
-
-		#self.setVisible (False)
 
 	def waitForParamsAndExecute (self):
 		# Only initialise the gui if there are parameters to be collected.  If
@@ -37,9 +33,8 @@ class ApplicationLauncher ():
 		# the spaces, but preserving anything inside quotes as a single parameter.
 		cmd = shlex.split (self.launchProg) + shlex.split (self.cmdString)
 
-		print "executing: " + str (self.cmdString)
+		#print "executing: " + str (self.cmdString)
 
-		print cmd
 		try:
 			proc = subprocess.Popen(cmd)
 		except OSError, e:
@@ -92,7 +87,6 @@ class ApplicationLauncher ():
 			index += 1
 
 		self.cmdString = outString
-		print outString
 
 class ExecDialog (QtGui.QDialog):
 	def __init__ (self, appDetails):
@@ -170,8 +164,6 @@ class ExecDialog (QtGui.QDialog):
 				continue
 
 			self.parameters.append (str (item.widget().text()))
-
-		#print self.parameters
 
 	def areParamsOk (self):
 		for i, param in enumerate (self.appDetails ["params"]):

@@ -15,39 +15,12 @@ class ExecutionDelegateManager (QtGui.QWidget):
 		QtGui.QWidget.__init__(self, None)
 
 		self.configManager = configManager
-
-		#self.pylaunchDir = os.path.dirname (os.path.abspath(__file__))
-		#self.pyapplaunchConfigDir = ConfigManager.getPyapplaunchConfigDir()
-		
-		#self.defaultDelegateListPath = os.path.join (self.pyapplaunchConfigDir, "exec_delegates.config")
-
-		# A signal to noftify of when an execution delegate's name has been
-		# changed.
-		#self.delegateNameChanged = pyqtSignal (unicode, unicode)
-
 		self.loadDelegateList ()
 
 	def loadDelegateList (self):
-		
-		#if os.path.exists (listPath):
-			#with open (listPath, 'r') as fileHandle:
-				##data = fileHandle.read()
-				##self.delegates = ast.literal_eval (data)
-				#self.delegates = pickle.loads (fileHandle.read())
-		#else:
-			## File does not exist.  We'll use an empty dictionary instead.
-			#self.delegates = {}
-
-			### We'll also create the file for later use.
-			##f = open (listPath, 'w')
-			##f.write ("test")
-			##f.close()
-
 		self.delegates = self.configManager.getConfigSection ("execDelegates")
 
 	def saveDelegateList (self):
-		#with open (listPath, 'w') as fileHandle:
-			 #pickle.dump (self.delegates, fileHandle)
 
 		self.configManager.setSection ("execDelegates", self.delegates)
 		self.configManager.writeConfigFile()
@@ -146,18 +119,12 @@ class EditExecDelegateDialog (QtGui.QDialog, RadioManagement):
 		textBox = QtGui.QLineEdit (self)
 		gridLayout.addWidget (textBox, 0, self.grdTxtCol)
 		if defaultName:
-			#self.setDefaultValue (textBox, defaultValues, defaultName)
 			textBox.setText (defaultName)
 			# This is a hack which I'm using to assign arbitrary text to the
 			# widget, since there does not seem to be any way to associate user
 			# data with a widget.  If anyone has less ugly way to do this,
 			# (including restructuring the code) please let me know.
 			textBox.setAccessibleName (defaultName)
-
-		## use sudo checkbox
-		#paramRequired = QtGui.QCheckBox ("Sudo?", self)
-		#gridLayout.addWidget (paramRequired, 0, self.grdChkCol)
-		#self.setDefaultValue (paramRequired, defaultValues, "sudo")
 
 		# Command with which to execute the applications.
 		label = QtGui.QLabel ("Command:", self)
@@ -166,7 +133,6 @@ class EditExecDelegateDialog (QtGui.QDialog, RadioManagement):
 		textBox = QtGui.QLineEdit (self)
 		gridLayout.addWidget (textBox, 1, self.grdTxtCol)
 		if defaultCommand:
-			#self.setDefaultValue (textBox, defaultValues, defaultCommand)
 			textBox.setText (defaultCommand)
 
 	def storeParameters (self):
@@ -175,8 +141,6 @@ class EditExecDelegateDialog (QtGui.QDialog, RadioManagement):
 
 		# Iterate over every entry.
 		for entryNum in self.getRowRange():
-		#for index, defaultItem in enumerate (self.)
-			
 			layoutItem = self.gridLayout.itemAtPosition (entryNum, 1)
 
 			if layoutItem == None:
@@ -209,14 +173,10 @@ class EditExecDelegateDialog (QtGui.QDialog, RadioManagement):
 				return False, delegates
 
 			if len (previousName) != 0 and previousName != name:
-				#print "Hark! yon name hast changed!"
-				#self.delegateNameChanged.emit (previousName, name)
 				# Keep track of these name changes for later.
 				changedNames [previousName] = name
 
 			delegates [name] = cmd
-
-#		print delegates
 
 		self.delegates = delegates.copy()
 
@@ -233,16 +193,10 @@ class EditExecDelegateDialog (QtGui.QDialog, RadioManagement):
 	def getDelegates (self):
 		return self.delegates
 
-	#@QtCore.pyqtSlot (int, QtGui.QWidget)
-	#def someSlot(status, source):
-		#pass
-
 	def newDelegateButtonClicked (self):
 		self.addExecDelegate()
 
 	def okBtnClicked (self):
 		# Check that all "required" parameters are filled in.
-		
-
-		if self.storeParameters():#self.areParamsOk():
+		if self.storeParameters():
 			self.accept()

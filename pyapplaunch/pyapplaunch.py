@@ -25,22 +25,11 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 		self.upDirShortCutKey = "/"
 		self.launchProgram = "/opt/trinity/bin/konsole -e"
 
-		#appdirs = AppDirs ("pyapplaunch")
-		#self.pyapplaunchConfigDir = appdirs.user_data_dir ("pyapplaunch")
-		#print self.pyapplaunchConfigDir
-
-		## If the directory does not exist, then create it.
-		#if not os.path.exists (self.pyapplaunchConfigDir):
-			#os.makedirs (self.pyapplaunchConfigDir)
-
 		self.pyapplaunchConfigDir = ConfigManager.getPyapplaunchConfigDir()
 
 		self.configManager = ConfigManager.ConfigManager()
 		self.executionManager = ExecutionDelegateManager (self.configManager)
 
-		#self.pyapplaunchConfigDir = self.configManager.getConfigDir()
-
-		#self.pylaunchDir = os.path.dirname (os.path.abspath(__file__))
 		self.scriptDatabasePath = self.pyapplaunchConfigDir + os.sep + "scripts.xml"
 
 		self.tree = Tree (self.scriptDatabasePath)
@@ -57,15 +46,7 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 			self.tree.substituteEveryOccurrenceOfValue (s1, s2, "exec_with")
 		self.executionManager.delegateNameChanged.connect (nameChangeAdaptor)
 
-		#pos = self.mapToGlobal (self.pos())
-		#print str (pos.x()) + str (pos.y())
-
 	def closeEvent (self, event):
-		#self.hide()
-
-		## The window is now hidden, so we can afford the delay to
-		## Commit the window position to disk.
-		#self.saveWindowPos()
 		self.hideWindow()
 		event.ignore()
 
@@ -110,14 +91,8 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 		self.sysTray.setContextMenu (menu)
 
 	def onSysTrayActivated (self, reason):
-		#print "reason: " + str (reason)
-		
 		if reason == 3:
 			if self.isHidden() == False:
-				#self.hide()
-				## The window is now hidden, so we can afford the delay to
-				## Commit the window position to disk.
-				#self.saveWindowPos()
 				self.hideWindow()
 			else:
 				self.showWindow()
@@ -197,7 +172,6 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 
 			# Set this radio button if it's slot matches that provided.
 			if defaultSlot != None and app ["slot"] == defaultSlot:
-				#radio.setChecked (True)
 				self.setCheckedRadioButtonByRow (row)
 
 			# Create the button.
@@ -213,6 +187,9 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 			# Do not go past "9"
 			if row <= 9:
 				button.setShortcut (QtGui.QKeySequence (str(row)))
+			elif row == 10:
+				# Set the "0" number as the short cut for item 10.
+				button.setShortcut (QtGui.QKeySequence (str(0)))
 
 			# We want a different colour for groups so we can tell them
 			# appart.
@@ -310,9 +287,6 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 	def editAppDetails (self, defaultDetails):
 		newApp = NewApplication (defaultDetails, self.executionManager)
 
-		#self.destroyed.connect (newApp.close)
-		#self.destroyed.connect (newApp.destroy)
-		#self.connec
 		self.connect (self, SIGNAL ("closing()"), newApp.close)
 
 		# Wait for the dialog to be closed/canceld/accepted/
@@ -393,7 +367,6 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 
 		self.tree.deleteApp (activeAppName)
 
-		#self.buildAppButtons()
 		self.deleteRow (self.radioGroup.checkedId())
 
 		# Commit changes to disk.
@@ -456,8 +429,6 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 		self.tree.writeTreeToDisk (self.scriptDatabasePath)
 
 	def appButtonClicked (self, appName):
-		print "button pressed: " + str (appName)
-
 		appDetails = self.tree.getAppDetails (appName)
 
 		if appDetails ["is_group"] == "True":

@@ -91,10 +91,6 @@ class RadioManagement ():
 
 				widgetItem = self.gridLayout.itemAtPosition (i, j)
 
-				#if widgetItem == None:
-					#continue
-
-				#gridLayout.addWidget (widgetItem.widget(), i - 1, j)
 				self.addWidgetItem (self.gridLayout, widgetItem, i - 1, j)
 
 		# We'll also need to remove the radio button's reference from "radioGroup".
@@ -198,12 +194,7 @@ class RadioManagement ():
 
 	def deleteButtonClicked (self):
 		pass
-	
-	#def moveUpButtonClicked (self):
-		#pass
-	
-	#def moveDownButtonClicked (self):
-		#pass
+
 
 	def moveUpButtonClicked (self):
 		# We are moving up, so we'll swap with the row above us.

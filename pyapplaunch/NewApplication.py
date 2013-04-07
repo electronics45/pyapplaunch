@@ -17,8 +17,6 @@ class NewApplication (QtGui.QDialog, RadioManagement):
 		self.gridLabelCol = 1
 		self.paramReqCol = 2
 
-		#self.setAttribute(Qt.WA_DeleteOnClose)
-
 		self.initUI()
 
 		self.appDetails = appDefaultDetails.copy()
@@ -307,12 +305,3 @@ class NewApplication (QtGui.QDialog, RadioManagement):
 
 	def newParamBtnClicked (self):
 		self.addParameter()
-
-	#def deleteButtonClicked (self):
-		#checkedButtonId = self.radioGroup.checkedId()
-
-		#if checkedButtonId == -1:
-			#print "No item selected!"
-			#return
-
-		#self.deleteRow (self.paramLayout, checkedButtonId)

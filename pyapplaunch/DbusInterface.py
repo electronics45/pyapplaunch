@@ -15,27 +15,12 @@ class DbusInterface (dbus.service.Object):
 			
 		busName = dbus.service.BusName (G_BUS_NAME, bus = dbus.SessionBus())
 		dbus.service.Object.__init__ (self, busName, G_MAIN_BUS_OBJECT_NAME)
-	
-	
-	@dbus.service.method (G_BUS_NAME)#, in_signature = 'dd', out_signature = 'd')
+
+	@dbus.service.method (G_BUS_NAME)
 	def show (self): self.mainWindow.showWindow()
 	
-	@dbus.service.method (G_BUS_NAME)#, in_signature = 'dd', out_signature = 'd')
+	@dbus.service.method (G_BUS_NAME)
 	def hide (self): self.mainWindow.hideWindow()
 	
 	#@dbus.service.method (G_BUS_NAME, in_signature = 'dd', out_signature = 'd')
 	#def add(self, a, b): return a+b
-	
-	#@dbus.service.method (G_BUS_NAME, in_signature = 'i', out_signature = 'i')
-	#def factorial (self, n): return 1 if n <= 1 else n*self.factorial (n-1)
-	
-	#@dbus.service.method (G_BUS_NAME, in_signature = 'd', out_signature = 'd')
-	#def sqrt (self, n): return math.sqrt (n)
-	
-	#@dbus.service.method (G_BUS_NAME, in_signature = 'd', out_signature = 'i')
-	#def round (self, n): return round (n)
- 
-#DBusQtMainLoop (set_as_default = True)
-#app = QCoreApplication([])
-#interface = DbusAccess()
-#app.exec_()
