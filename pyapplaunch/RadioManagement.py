@@ -91,7 +91,7 @@ class RadioManagement ():
 
 				widgetItem = self.gridLayout.itemAtPosition (i, j)
 
-				self.addWidgetItem (self.gridLayout, widgetItem, i - 1, j)
+				self.addWidgetItem (widgetItem, i - 1, j)
 
 		# We'll also need to remove the radio button's reference from "radioGroup".
 		lastRadioButon = self.gridLayout.itemAtPosition (rowCount, self.radioCol)
