@@ -12,10 +12,10 @@ from ConfigManager import ConfigManager
 from DbusInterface import DbusInterface
 from ExecutionDelegate import *
 from NewApplication import *
-from radioManagement import radioManagement
+from RadioManagement import RadioManagement
 from Tree import Tree
 
-class MainWindow (QtGui.QMainWindow, radioManagement):
+class MainWindow (QtGui.QMainWindow, RadioManagement):
 	def __init__ (self):
 		QtGui.QMainWindow.__init__ (self)
 
@@ -151,7 +151,7 @@ class MainWindow (QtGui.QMainWindow, radioManagement):
 		vbox.addLayout (self.buttonLayout)
 		self.buttonLayout.setColumnStretch (self.btnCol, 1) # Btn column stretches most.
 
-		radioManagement.__init__ (self, self.radioCol, self.buttonLayout)
+		RadioManagement.__init__ (self, self.radioCol, self.buttonLayout)
 
 		# A horizontal rule.
 		line = QtGui.QFrame (self)

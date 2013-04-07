@@ -6,7 +6,7 @@ import pickle
 from collections import OrderedDict
 
 import ConfigManager
-from radioManagement import radioManagement
+from RadioManagement import RadioManagement
 
 class ExecutionDelegateManager (QtGui.QWidget):
 	delegateNameChanged = pyqtSignal (str, str)
@@ -70,7 +70,7 @@ class ExecutionDelegateManager (QtGui.QWidget):
 	def getDelegates (self):
 		return self.delegates
 
-class EditExecDelegateDialog (QtGui.QDialog, radioManagement):
+class EditExecDelegateDialog (QtGui.QDialog, RadioManagement):
 	delegateNameChanged = pyqtSignal (str, str)
 
 	def __init__ (self, defaultDelegates = {}):
@@ -102,7 +102,7 @@ class EditExecDelegateDialog (QtGui.QDialog, radioManagement):
 
 		vbox.addLayout (self.grid)
 
-		radioManagement.__init__ (self, self.radioCol, self.grid)
+		RadioManagement.__init__ (self, self.radioCol, self.grid)
 
 		# Set window properties
 		self.setGeometry (300, 300, 290, 150)

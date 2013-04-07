@@ -3,9 +3,9 @@ from PyQt4 import QtGui
 
 import re
 
-from radioManagement import radioManagement
+from RadioManagement import RadioManagement
 
-class NewApplication (QtGui.QDialog, radioManagement):
+class NewApplication (QtGui.QDialog, RadioManagement):
 	def __init__ (self, appDefaultDetails, execManager):
 		super (NewApplication, self).__init__()
 
@@ -97,7 +97,7 @@ class NewApplication (QtGui.QDialog, radioManagement):
 		# grid column stretches most
 		self.paramLayout.setColumnStretch (1, 1)
 
-		radioManagement.__init__ (self, self.radioCol, self.paramLayout)
+		RadioManagement.__init__ (self, self.radioCol, self.paramLayout)
 
 		self.initDelAndMovButtons (vbox)
 

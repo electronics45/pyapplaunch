@@ -1,7 +1,7 @@
 from PyQt4.QtCore import *
 from PyQt4 import QtGui
 
-class radioManagement ():
+class RadioManagement ():
 	def __init__ (self, radioCol, gridLayout):
 		self.radioGroup = QtGui.QButtonGroup() # To store radio buttons.
 		self.radioCol = radioCol
