@@ -22,7 +22,7 @@ class ExecutionDelegateManager (QtGui.QWidget):
 
 		# If the list is empty, add "bash" so that it is not empty.
 		if len (self.delegates) == 0:
-			self.delegates = {"bash":"bash"}
+			self.delegates = {"xterm":"xterm -e"}
 
 	def saveDelegateList (self):
 

@@ -132,8 +132,11 @@ class NewApplication (QtGui.QDialog, RadioManagement):
 			self.command.setText (values ["command"])
 		if "exec_with" in values:
 			comboItems = self.execManager.getDelegates().keys()
-			comboIndex = comboItems.index (values ["exec_with"])
-			self.execDelegate.setCurrentIndex (comboIndex)
+
+			if values ["exec_with"] in comboItems:
+				comboIndex = comboItems.index (values ["exec_with"])
+				self.execDelegate.setCurrentIndex (comboIndex)
+
 		if "use_sudo" in values:
 			pass
 

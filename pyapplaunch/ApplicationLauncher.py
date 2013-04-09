@@ -33,7 +33,7 @@ class ApplicationLauncher ():
 		# the spaces, but preserving anything inside quotes as a single parameter.
 		cmd = shlex.split (self.launchProg) + shlex.split (self.cmdString)
 
-		#print "executing: " + str (self.cmdString)
+		#print "executing: " + str (cmd)
 
 		try:
 			proc = subprocess.Popen(cmd)
