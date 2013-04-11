@@ -68,6 +68,7 @@ class Tree ():
 		appNode = self.getNodeByName (appDetails ["name"])
 
 		if appNode == None:
+			appName = appDetails ["name"]
 			raise RuntimeError ("Could not find app '" + appName + "' in current context '" + str (self.currentContext.tag) + "'.")
 
 		# Iterate over all properties to be updated.
@@ -158,7 +159,7 @@ class Tree ():
 			return False
 
 	def getNode (self, parent, key):
-		node = self.getNodeByName (key, parent)
+		node = parent.find (key)
 
 		if node == None:
 			# Child node does not yet exist, so lets create it.
