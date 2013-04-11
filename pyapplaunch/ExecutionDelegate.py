@@ -40,7 +40,7 @@ class ExecutionDelegateManager (QtGui.QWidget):
 		# Retrieve and store
 		self.delegates = dialog.getDelegates()
 
-		print self.delegates
+		#print self.delegates
 
 		self.saveDelegateList ()
 
@@ -199,10 +199,16 @@ class EditExecDelegateDialog (QtGui.QDialog, RadioManagement):
 	def getDelegates (self):
 		return self.delegates
 
+	def warn (self, message):
+		error = QtGui.QErrorMessage (self)
+		error.showMessage (message)
+		error.exec_()
+
 	def newDelegateButtonClicked (self):
 		self.addExecDelegate()
 
 	def okBtnClicked (self):
 		# Check that all "required" parameters are filled in.
-		if self.storeParameters():
+		ok,params = self.storeParameters()
+		if ok:
 			self.accept()
