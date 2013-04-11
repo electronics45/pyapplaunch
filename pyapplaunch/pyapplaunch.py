@@ -340,6 +340,9 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 			newAppDetails, wasAccepted = self.editDetails (self.editAppDetails,
 				appDetails)
 
+			if not wasAccepted:
+				return
+
 			# Easiest thing to do now is delete the old app, and add a new one.
 			self.tree.deleteApp (appDetails ["name"])
 			self.tree.addApp (newAppDetails)
@@ -350,7 +353,12 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 			newAppDetails, wasAccepted = self.editDetails (self.editGroupName,
 				appDetails)
 
-			self.tree.renameAndUpdateApp (originalName, appDetails)
+			if not wasAccepted:
+				return
+
+			print newAppDetails
+			print originalName
+			self.tree.renameAndUpdateApp (originalName, newAppDetails)
 
 		# Rebuild the buttons.
 		self.buildAppButtons()
