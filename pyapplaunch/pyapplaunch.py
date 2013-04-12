@@ -79,6 +79,12 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 		self.hide()
 		self.saveWindowPos()
 
+	def toggleWindow (self):
+		if self.isHidden() == False:
+			self.hideWindow()
+		else:
+			self.showWindow()
+
 	def createSysTray (self):
 		self.sysTray = QtGui.QSystemTrayIcon (self)
 		self.sysTray.setIcon (self.windowIcon())
@@ -92,10 +98,7 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 
 	def onSysTrayActivated (self, reason):
 		if reason == 3:
-			if self.isHidden() == False:
-				self.hideWindow()
-			else:
-				self.showWindow()
+			self.toggleWindow()
 
 	def initUI (self):
 		# Set the icon for the window.

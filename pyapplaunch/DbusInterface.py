@@ -21,6 +21,9 @@ class DbusInterface (dbus.service.Object):
 	
 	@dbus.service.method (G_BUS_NAME)
 	def hide (self): self.mainWindow.hideWindow()
+
+	@dbus.service.method (G_BUS_NAME)
+	def toggle (self): self.mainWindow.toggleWindow()
 	
 	#@dbus.service.method (G_BUS_NAME, in_signature = 'dd', out_signature = 'd')
 	#def add(self, a, b): return a+b
