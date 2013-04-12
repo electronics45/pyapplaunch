@@ -1,4 +1,6 @@
 
 --- Installation ---
 Pyapplaunch Requires the following packages install to work:
-- PyQt
+- python-qt4
+- python-qt4-dbus
+
