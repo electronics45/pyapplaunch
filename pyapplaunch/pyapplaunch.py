@@ -99,6 +99,10 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 	def onSysTrayActivated (self, reason):
 		if reason == 3:
 			self.toggleWindow()
+	
+	def returnToHomeContext (self):
+		self.tree.returnToRootContext()
+		self.buildAppButtons()
 
 	def initUI (self):
 		# Set the icon for the window.
@@ -113,6 +117,9 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 		self.exitAction.setShortcut ('Ctrl+Q')
 		self.exitAction.setStatusTip ('Exit application')
 		self.exitAction.triggered.connect (self.quit)
+		
+		# Add a "home" shortcut key to return to the root context.
+		QtGui.QShortcut (QtGui.QKeySequence ("-"), self, self.returnToHomeContext)
 
 		#menubar = self.menuBar()
 		#fileMenu = menubar.addMenu ('&File')

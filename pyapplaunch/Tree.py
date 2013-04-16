@@ -231,6 +231,9 @@ class Tree ():
 			return True
 		else:
 			return False
+			
+	def returnToRootContext (self):
+		self.currentContext = self.root
 
 	def moveContextUpOneLevel (self):
 		self.currentContext = self.contextTrail.pop()
