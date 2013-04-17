@@ -103,6 +103,10 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 	def returnToHomeContext (self):
 		self.tree.returnToRootContext()
 		self.buildAppButtons()
+		
+	def contextUpLevel (self):
+		self.tree.moveContextUpOneLevel()
+		self.buildAppButtons()
 
 	def initUI (self):
 		# Set the icon for the window.
@@ -117,6 +121,12 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 		self.exitAction.setShortcut ('Ctrl+Q')
 		self.exitAction.setStatusTip ('Exit application')
 		self.exitAction.triggered.connect (self.quit)
+		
+		# Add a "home" shortcut key to return to the root context.
+		QtGui.QShortcut (QtGui.QKeySequence ("-"), self, self.returnToHomeContext)
+		
+		# Add a "home" shortcut key to return to the root context.
+		QtGui.QShortcut (QtGui.QKeySequence ("/"), self, self.contextUpLevel)
 
 		#menubar = self.menuBar()
 		#fileMenu = menubar.addMenu ('&File')
@@ -213,7 +223,7 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 			# Build a button to take us up one level if we're not in the root context.
 			button = QtGui.QPushButton ("Go Up One Level", self)
 			hbox.addWidget (button)
-			self.connect (button, SIGNAL ("clicked()"), self.upLvlBtnClicked)
+			self.connect (button, SIGNAL ("clicked()"), self.contextUpLevel)
 			self.setGroupButtonColour (button)
 
 			# Build the button to return to home context.
@@ -221,9 +231,6 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 			hbox.addWidget (button)
 			self.connect (button, SIGNAL ("clicked()"), self.returnToHomeContext)
 			self.setGroupButtonColour (button)
-
-			# This button shall also have a shortcut key.
-			button.setShortcut (QtGui.QKeySequence (self.homeDirShortCutKey))
 
 	def clearAppButtons (self):
 		self.clearGridLayout()
@@ -466,9 +473,9 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 		launcher = ApplicationLauncher (appDetails, launchProgram)
 		launcher.waitForParamsAndExecute()
 
-	def upLvlBtnClicked (self):
-		self.tree.moveContextUpOneLevel()
-		self.buildAppButtons()
+	#def upLvlBtnClicked (self):
+		#self.tree.moveContextUpOneLevel()
+		#self.buildAppButtons()
 
 	def swapSlots (self, appDetails1, appDetails2):
 

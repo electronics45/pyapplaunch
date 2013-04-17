@@ -236,7 +236,8 @@ class Tree ():
 		self.currentContext = self.root
 
 	def moveContextUpOneLevel (self):
-		self.currentContext = self.contextTrail.pop()
+		if not self.isRootContext():
+			self.currentContext = self.contextTrail.pop()
 
 	def indent (self, elem, level = 0):
 		i = "\n" + level*"  "
