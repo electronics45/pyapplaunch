@@ -23,7 +23,7 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 		self.radioCol = 0
 
 		self.upDirShortCutKey = "/"
-		self.launchProgram = "/opt/trinity/bin/konsole -e"
+		self.homeDirShortCutKey = "-"
 
 		self.pyapplaunchConfigDir = ConfigManager.getPyapplaunchConfigDir()
 
@@ -117,9 +117,6 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 		self.exitAction.setShortcut ('Ctrl+Q')
 		self.exitAction.setStatusTip ('Exit application')
 		self.exitAction.triggered.connect (self.quit)
-		
-		# Add a "home" shortcut key to return to the root context.
-		QtGui.QShortcut (QtGui.QKeySequence ("-"), self, self.returnToHomeContext)
 
 		#menubar = self.menuBar()
 		#fileMenu = menubar.addMenu ('&File')
@@ -201,22 +198,32 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 				# Set the "0" number as the short cut for item 10.
 				button.setShortcut (QtGui.QKeySequence (str(0)))
 
-			# We want a different colour for groups so we can tell them
+			# We want a different colour for groups so we can tell themself.homeDirShortCutKey
 			# appart.
 			if app ["is_group"] == "True":
 				self.setGroupButtonColour (button)
 
 			row += 1
 
-		# Build a button to take us up one level if we're not in the root context.
+		# Build return navigation buttons
 		if not self.tree.isRootContext():
+			hbox = QtGui.QHBoxLayout()
+			self.buttonLayout.addLayout (hbox, row, self.btnCol)
+
+			# Build a button to take us up one level if we're not in the root context.
 			button = QtGui.QPushButton ("Go Up One Level", self)
-			self.buttonLayout.addWidget (button, row, self.btnCol)
+			hbox.addWidget (button)
 			self.connect (button, SIGNAL ("clicked()"), self.upLvlBtnClicked)
 			self.setGroupButtonColour (button)
 
+			# Build the button to return to home context.
+			button = QtGui.QPushButton ("Home", self)
+			hbox.addWidget (button)
+			self.connect (button, SIGNAL ("clicked()"), self.returnToHomeContext)
+			self.setGroupButtonColour (button)
+
 			# This button shall also have a shortcut key.
-			button.setShortcut (QtGui.QKeySequence (self.upDirShortCutKey))
+			button.setShortcut (QtGui.QKeySequence (self.homeDirShortCutKey))
 
 	def clearAppButtons (self):
 		self.clearGridLayout()

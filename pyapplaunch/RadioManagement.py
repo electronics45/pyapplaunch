@@ -52,9 +52,8 @@ class RadioManagement ():
 		for i in range (self.gridLayout.rowCount()):
 			for j in range (self.gridLayout.columnCount()):
 				widgetItem = self.gridLayout.itemAtPosition (i, j)
-				
-				if widgetItem != None:
-					widgetItem.widget().setParent (None)
+
+				self.deleteWidgetItem (widgetItem)
 
 	def getWidgetAtCheckedRow (self, column):
 		checkedButtonId = self.radioGroup.checkedId()
