@@ -103,10 +103,18 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 	def returnToHomeContext (self):
 		self.tree.returnToRootContext()
 		self.buildAppButtons()
+		self.updateTiteContextPath()
 		
 	def contextUpLevel (self):
 		self.tree.moveContextUpOneLevel()
 		self.buildAppButtons()
+		self.updateTiteContextPath()
+	
+	def updateTiteContextPath (self):
+		path = self.tree.getContextPath()
+
+		# Put the current context path into the title-bar for convinience.
+		self.setWindowTitle ("PyLaunch - " + path)
 
 	def initUI (self):
 		# Set the icon for the window.
@@ -173,7 +181,7 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 		self.connect (newGroupBtn, SIGNAL ("clicked()"), self.newGroupBtnClicked)
 		
 		self.mainWidget.setLayout (vbox)
-		self.setWindowTitle ("PyLaunch")
+		self.setWindowTitle ("PyLaunch - /")
 
 	def buildAppButtons (self, defaultSlot = None):
 		row = 1
@@ -466,6 +474,7 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 		if appDetails ["is_group"] == "True":
 			self.tree.changeContextToGroup (appName)
 			self.buildAppButtons()
+			self.updateTiteContextPath()
 			return
 
 		launchProgram = self.executionManager.getDelegates() [appDetails ["exec_with"]]

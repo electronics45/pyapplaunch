@@ -9,6 +9,7 @@ class Tree ():
 		self.currentContext = None
 
 		self.contextTrail = []
+		self.contextPath = []
 
 		try:
 			self.readTreeFromDisk (treePath)
@@ -224,20 +225,35 @@ class Tree ():
 	def changeContextToGroup (self, groupName):
 		self.contextTrail.append (self.currentContext)
 
-		self.currentContext = self.getNodeByName (groupName).find("children")
+		self.currentContext = self.getNodeByName (groupName).find ("children")
+
+		self.contextPath.append (groupName)
 
 	def isRootContext (self):
 		if self.currentContext == self.root:
 			return True
 		else:
 			return False
-			
+
 	def returnToRootContext (self):
 		self.currentContext = self.root
+		self.contextPath = []
 
 	def moveContextUpOneLevel (self):
 		if not self.isRootContext():
 			self.currentContext = self.contextTrail.pop()
+			self.contextPath.pop ()
+	
+	def getContextPath (self):
+		path = ""
+		for group in self.contextPath:
+			path = path + "/" + group
+
+		# If we're in the root context, set path as "/"
+		if len (path) == 0:
+			path = "/"
+
+		return path
 
 	def indent (self, elem, level = 0):
 		i = "\n" + level*"  "
