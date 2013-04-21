@@ -1,6 +1,32 @@
+Overview
+------------
+PyAppLaunch is a simplistic application launcher written in python.
 
---- Installation ---
+It seems everyone has a different idea of what an "application launcher"
+is.  Naturally, I thought it should be something entirely different, so
+I wrote PyAppLaunch.  It's essentially somewhere to keep and organise
+all those BASH one-liners I keep forgetting.
+
+You can configure each button with a name, a command to launch when
+clicked, as well as what method to launch that command (e.g. sudo,
+xterm, etc), and an abitrary number of "parameters" which will be prompted
+for when launching the command.
+
+You may also configure a button as a "group" which will contain another set
+of buttons.
+
+PyAppLaunch also has a DBUS interface which was designed with the purpose
+of assigning a DBUS command to a hot key. Example using qdus:
+
+qdbus org.latticepoint.projects.pyapplaunch /pyapplaunch org.latticepoint.projects.pyapplaunch.toggle
+
+Installation
+------------
 Pyapplaunch Requires the following packages install to work:
 - python-qt4
 - python-qt4-dbus
+
+Usage
+------------
+./run_pyapplaunch
 
