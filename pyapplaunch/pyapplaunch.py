@@ -349,7 +349,7 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 		self.createNewButton (self.editAppDetails)
 
 	def setGroupButtonColour (self, button):
-		button.setStyleSheet("QPushButton {color:black; background-color: lightgrey;}")
+		button.setStyleSheet("QPushButton {color:black; background-color: grey;}")
 
 	def newGroupBtnClicked (self):
 		groupDetails = {}
