@@ -33,6 +33,9 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 		self.scriptDatabasePath = self.pyapplaunchConfigDir + os.sep + "scripts.xml"
 
 		self.tree = Tree (self.scriptDatabasePath)
+		
+		self.upButton = None
+		self.homeButton = None
 
 		self.initUI()
 		self.buildAppButtons()
@@ -229,19 +232,24 @@ class MainWindow (QtGui.QMainWindow, RadioManagement):
 			self.buttonLayout.addLayout (hbox, row, self.btnCol)
 
 			# Build a button to take us up one level if we're not in the root context.
-			button = QtGui.QPushButton ("Go Up One Level", self)
-			hbox.addWidget (button)
-			self.connect (button, SIGNAL ("clicked()"), self.contextUpLevel)
-			self.setGroupButtonColour (button)
+			self.upButton = QtGui.QPushButton ("Go Up One Level", self)
+			hbox.addWidget (self.upButton)
+			self.connect (self.upButton, SIGNAL ("clicked()"), self.contextUpLevel)
+			self.setGroupButtonColour (self.upButton)
 
 			# Build the button to return to home context.
-			button = QtGui.QPushButton ("Home", self)
-			hbox.addWidget (button)
-			self.connect (button, SIGNAL ("clicked()"), self.returnToHomeContext)
-			self.setGroupButtonColour (button)
+			self.homeButton = QtGui.QPushButton ("Home", self)
+			hbox.addWidget (self.homeButton)
+			self.connect (self.homeButton, SIGNAL ("clicked()"), self.returnToHomeContext)
+			self.setGroupButtonColour (self.homeButton)
 
 	def clearAppButtons (self):
 		self.clearGridLayout()
+		
+		if self.upButton != None:
+			self.upButton.setParent (None)
+		if self.homeButton != None:
+			self.homeButton.setParent (None)
 
 	def getActiveAppName (self):
 		button = self.getWidgetAtCheckedRow (self.btnCol)
